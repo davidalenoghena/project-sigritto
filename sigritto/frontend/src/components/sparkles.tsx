@@ -54,8 +54,10 @@ export const SparklesCore = ({
       speedY: number
 
       constructor() {
-        this.x = Math.random() * canvas.width
-        this.y = Math.random() * canvas.height
+        //if (!canvas) return
+        this.x = Math.random() * window.innerWidth
+        //if (!canvas) return
+        this.y = Math.random() * window.innerHeight
         this.size = Math.random() * (maxSize - minSize) + minSize
         this.speedX = Math.random() * 0.5 - 0.25
         this.speedY = Math.random() * 0.5 - 0.25
@@ -65,10 +67,10 @@ export const SparklesCore = ({
         this.x += this.speedX
         this.y += this.speedY
 
-        if (this.x > canvas.width) this.x = 0
-        if (this.x < 0) this.x = canvas.width
-        if (this.y > canvas.height) this.y = 0
-        if (this.y < 0) this.y = canvas.height
+        if (this.x > window.innerWidth) this.x = 0
+        if (this.x < 0) this.x = window.innerWidth
+        if (this.y > window.innerHeight) this.y = 0
+        if (this.y < 0) this.y = window.innerHeight
 
         // Mouse interaction
         const dx = mousePosition.x - this.x
