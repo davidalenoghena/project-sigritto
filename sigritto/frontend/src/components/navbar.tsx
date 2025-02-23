@@ -14,12 +14,12 @@ export default function Navbar() {
       className="flex items-center justify-between px-6 py-4 backdrop-blur-sm border-b border-white/10"
     >
       <a href="/" className="flex items-center space-x-2">
-        <Bot className="w-8 h-8 text-purple-500" />
-        <span className="text-white font-medium text-xl">Sigritto</span>
+         <img src="/icon.png" alt="Sigritto Icon" width={132} height={64} className="text-purple-500" />
       </a>
       {/* <Link href="/" className="flex items-center space-x-2">
         <Bot className="w-8 h-8 text-purple-500" />
         <span className="text-white font-medium text-xl">ResearchAI</span>
+        <Image src="../../../public/icon.png" alt="Sigritto Icon" width={32} height={32} className="text-purple-500" />
       </Link> */}
 
       <div className="hidden md:flex items-center space-x-8">
