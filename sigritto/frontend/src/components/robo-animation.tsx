@@ -1,7 +1,7 @@
 "use client"
 
 import { motion } from "framer-motion"
-import { Bot } from "lucide-react"
+import { Wallet } from "lucide-react"
 
 export function RoboAnimation() {
   return (
@@ -30,7 +30,7 @@ export function RoboAnimation() {
               ease: "easeInOut",
             }}
           />
-          <Bot className="w-32 h-32 text-purple-500" />
+          <Wallet className="w-32 h-32 text-purple-500" />
         </div>
       </motion.div>
     </div>
