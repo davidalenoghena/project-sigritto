@@ -1,7 +1,7 @@
 "use client"
 
 import { Button } from "../components/ui/button"
-import { Bot, Menu } from "lucide-react"
+import { Menu } from "lucide-react"
 import { motion } from "framer-motion"
 //import Link from "next/link"
 import type React from "react" // Added import for React
