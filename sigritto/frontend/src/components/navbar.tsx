@@ -3,10 +3,16 @@
 import { Button } from "../components/ui/button"
 import { Bot, Menu } from "lucide-react"
 import { motion } from "framer-motion"
-//import Link from "next/link"
+import { useNavigate } from "react-router-dom" // Import useNavigate from react-router-dom
 import type React from "react" // Added import for React
 
 export default function Navbar() {
+  const navigate = useNavigate(); // Initialize useNavigate
+
+  const handlePricingClick = () => {
+    navigate('/pricing'); // Navigate to the pricing page
+  };
+
   return (
     <motion.nav
       initial={{ y: -100 }}
@@ -32,7 +38,7 @@ export default function Navbar() {
         {/* <Button variant="ghost" className="text-white hover:text-purple-400">
           Sign In
         </Button> */}
-        <Button className="bg-purple-600 hover:bg-purple-700 text-white">Connect Wallet</Button>
+        <Button className="bg-purple-600 hover:bg-purple-700 text-white" onClick={handlePricingClick}>Connect Wallet</Button>
       </div>
 
       <Button variant="ghost" size="icon" className="md:hidden text-white">
@@ -50,4 +56,3 @@ function NavLink({ href, children }: { href: string; children: React.ReactNode }
     </a>
   )
 }
-
