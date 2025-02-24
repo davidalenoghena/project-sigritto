@@ -3,6 +3,7 @@
 import { Button } from "../components/ui/button"
 import { Menu } from "lucide-react"
 import { motion } from "framer-motion"
+import { Link } from 'react-router-dom';
 //import Link from "next/link"
 import type React from "react" // Added import for React
 
@@ -23,7 +24,7 @@ export default function Navbar() {
       </Link> */}
 
       <div className="hidden md:flex items-center space-x-8">
-        <NavLink href="/features">Features</NavLink>
+        <Link href="/features">Features</Link>
         <NavLink href="/how-it-works">How it Works</NavLink>
         <NavLink href="/pricing">Pricing</NavLink>
       </div>
