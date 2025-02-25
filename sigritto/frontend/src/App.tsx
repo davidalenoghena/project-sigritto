@@ -1,6 +1,6 @@
 import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
-import Navbar from "@/components/Navbar"
 import Home from "@/pages/Home"
+import Navbar from "./pages/Navbar"
 import HowItWorks from "@/pages/HowItWorks"
 // Import other pages as needed
 
@@ -20,4 +20,3 @@ function App() {
 }
 
 export default App
-
