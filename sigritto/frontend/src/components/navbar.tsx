@@ -11,7 +11,17 @@ const navItems = [
   { name: "How it Works", path: "/how-it-works" },
   { name: "Pricing", path: "/pricing" },
 ]
-
+function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
+    return (
+        <Link
+            to={to}
+            className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors relative group"
+        >
+            {children}
+            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-500 transition-all group-hover:w-full" />
+        </Link>
+    )
+}
 export default function Navbar() {
   const [isOpen, setIsOpen] = useState(false)
 
@@ -101,16 +111,3 @@ export default function Navbar() {
     </motion.nav>
   )
 }
-
-function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
-  return (
-    <Link
-      to={to}
-      className="text-gray-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium transition-colors relative group"
-    >
-      {children}
-      <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-purple-500 transition-all group-hover:w-full" />
-    </Link>
-  )
-}
-
