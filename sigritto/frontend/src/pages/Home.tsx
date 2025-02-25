@@ -1,9 +1,4 @@
-import { Routes, Route } from 'react-router-dom';
-import Navbar from './components/Navbar';
-import Home from './pages/Home';
-import About from './pages/About';
-//import Hero from "@/components/hero"
-//import Navbar from "@/components/navbar"
+import Hero from "@/components/hero"
 import { SparklesCore } from "@/components/sparkles"
 
 export default function Home() {
@@ -23,7 +18,6 @@ export default function Home() {
             </div>
 
             <div className="relative z-10">
-                <Navbar />
                 <Hero />
             </div>
         </main>
