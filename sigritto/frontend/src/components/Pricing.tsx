@@ -1,20 +1,33 @@
-import React from 'react';
+//import React from 'react';
 
 const plans = [
   {
     name: 'Free Plan',
     price: '$0',
-    features: ['Feature 1', 'Feature 2', 'Feature 3'],
+    features: [
+      'Up to 3 signers',
+      'Basic transaction management',
+      'Email notifications',
+    ],
   },
   {
-    name: 'Pro Plan',
-    price: '$49/month',
-    features: ['Feature 1', 'Feature 2', 'Feature 3', 'Feature 4'],
+    name: 'Premium Plan',
+    features: [
+      'Up to 10 signers',
+      'Advanced transaction management',
+      'Priority email support',
+      'Custom transaction limits',
+    ],
   },
   {
     name: 'Enterprise Plan',
-    price: 'Contact Us',
-    features: ['Feature 1', 'Feature 2', 'Feature 3', 'Feature 4', 'Feature 5'],
+    features: [
+      'Unlimited signers',
+      'Full transaction management',
+      'Dedicated account manager',
+      'Custom integrations',
+      '24/7 support',
+    ],
   },
 ];
 
@@ -33,10 +46,10 @@ export default function Pricing() {
                   <li key={index} className="mb-2">{feature}</li>
                 ))}
               </ul>
-              {plan.name === 'Enterprise Plan' ? (
-                <button className="bg-blue-500 text-white py-2 px-4 rounded" onClick={() => alert('Contacting Dev Team...')}>Contact Us</button>
+              {plan.name === 'Free Plan' ? (
+                <button className="bg-purple-600 text-white py-2 px-4 rounded">Get Started</button>
               ) : (
-                <button className="bg-blue-500 text-white py-2 px-4 rounded">Get Started</button>
+                <button className="bg-purple-600 text-gray-400 py-2 px-4 rounded" disabled>Coming Soon</button>
               )}
             </div>
           ))}
