@@ -2,7 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
 import Hero from "@/components/hero";
 import Navbar from "@/components/navbar";
 import { SparklesCore } from "@/components/sparkles";
-import PricingPage from "@/components/Pricing";
+import PricingPage from "@/pages/Pricing";
 
  function App() {
   return (
