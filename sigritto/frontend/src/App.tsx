@@ -4,7 +4,7 @@ import Navbar from "@/components/navbar";
 import { SparklesCore } from "@/components/sparkles";
 import PricingPage from "@/components/Pricing";
 
-export default function App() {
+ function App() {
   return (
     <Router>
       <main className="min-h-screen bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
