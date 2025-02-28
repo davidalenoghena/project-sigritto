@@ -2,6 +2,7 @@ import { BrowserRouter as Router, Route, Routes } from "react-router-dom"
 import Home from "@/pages/Home"
 import Navbar from "./pages/Navbar"
 import HowItWorks from "@/pages/HowItWorks"
+import Pricing from "./pages/pricing"
 // Import other pages as needed
 
 function App() {
@@ -12,6 +13,7 @@ function App() {
                 <Routes>
                     <Route path="/" element={<Home />} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/pricing" element={<Pricing />} />
                     {/* Add other routes as needed */}
                 </Routes>
             </div>
