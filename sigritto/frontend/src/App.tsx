@@ -11,8 +11,9 @@ function App() {
             <div className="min-h-screen bg-black/[0.96] antialiased bg-grid-white/[0.02]">
                 <Navbar />
                 <Routes>
-                <Route path="/pricing" element={<Pricing />} />
+                    <Route path="/" element={<Home />} />
                     <Route path="/how-it-works" element={<HowItWorks />} />
+                    <Route path="/pricing" element={<Pricing />} />
                     {/* Add other routes as needed */}
                 </Routes>
             </div>
