@@ -1,0 +1,17 @@
+{
+  "ExpandedNodes": [
+    "",
+    "\\sigritto",
+    "\\sigritto\\frontend",
+    "\\sigritto\\frontend\\src\\components",
+    "\\sigritto\\frontend\\src\\components\\ui",
+    "\\sigritto\\frontend\\src\\components\\ui\\deleted",
+    "\\sigritto\\frontend\\src\\pages",
+    "\\sigritto\\programs",
+    "\\sigritto\\programs\\sigritto",
+    "\\sigritto\\programs\\sigritto\\src",
+    "\\sigritto\\tests"
+  ],
+  "SelectedNode": "\\sigritto\\programs\\sigritto\\src\\lib.rs",
+  "PreviewInSolutionExplorer": false
+}
