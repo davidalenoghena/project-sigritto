@@ -1,159 +1,117 @@
 use anchor_lang::prelude::*;
-use anchor_spl::token::{self, Token, TokenAccount};
+use anchor_lang::solana_program::pubkey::Pubkey;
 
-declare_id!("2ozqMut8UKfiW9CxazuzqwLi9Bxd1NnVwXhbc3VZe8bQ");
+declare_id!("5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"); // Program ID
 
 #[program]
-pub mod sigritto {
+pub mod multisig_wallet {
     use super::*;
 
-    pub fn initialize_wallet(
-        ctx: Context<InitializeWallet>,
-        required_signers: u8,
-        signers: Vec<Pubkey>
+    /// Initialize the multisig wallet
+    pub fn initialize_multisig_wallet(
+        ctx: Context<InitializeMultisig>,
+        owners: Vec<Pubkey>,
+        threshold: u8,
+        category: UserCategory,
     ) -> Result<()> {
-        let wallet = &mut ctx.accounts.multisig_wallet;
-        wallet.owner = ctx.accounts.owner.key();
-        wallet.required_signers = required_signers;
-        wallet.signers = signers;
-        wallet.is_initialized = true;
-        Ok(())
-    }
+        let multisig = &mut ctx.accounts.multisig;
 
-    pub fn create_transaction(
-        ctx: Context<CreateTransaction>,
-        amount: u64,
-        destination: Pubkey
-    ) -> Result<()> {
-        let wallet = &ctx.accounts.multisig_wallet;
-        let transaction = &mut ctx.accounts.transaction;
+        let max_owners = get_max_owners(&category);
 
-        require!(
-            wallet.signers.contains(&ctx.accounts.proposer.key()),
-            MultisigError::Unauthorized
-        );
-
-        transaction.wallet = wallet.key();
-        transaction.amount = amount;
-        transaction.destination = destination;
-        transaction.proposer = ctx.accounts.proposer.key();
-        transaction.approvals = vec![ctx.accounts.proposer.key()];
-        transaction.executed = false;
-
-        Ok(())
-    }
-
-    pub fn approve_transaction(
-        ctx: Context<ApproveTransaction>
-    ) -> Result<()> {
-        let wallet = &ctx.accounts.multisig_wallet;
-        let transaction = &mut ctx.accounts.transaction;
-
-        require!(
-            wallet.signers.contains(&ctx.accounts.signer.key()),
-            MultisigError::Unauthorized
-        );
-        
-        require!(
-            !transaction.approvals.contains(&ctx.accounts.signer.key()),
-            MultisigError::AlreadyApproved
-        );
-
-        transaction.approvals.push(ctx.accounts.signer.key());
-
-        if transaction.approvals.len() >= wallet.required_signers as usize {
-            let token_program = ctx.accounts.token_program.to_account_info();
-            let cpi_accounts = token::Transfer {
-                from: ctx.accounts.token_account.to_account_info(),
-                to: ctx.accounts.destination_account.to_account_info(),
-                authority: ctx.accounts.multisig_wallet.to_account_info(),
-            };
-            let cpi_ctx = CpiContext::new(token_program, cpi_accounts);
-            token::transfer(cpi_ctx, transaction.amount)?;
-            transaction.executed = true;
+        // Validate number of owners
+        if owners.len() > max_owners as usize {
+            return err!(MultisigError::TooManyOwners);
         }
 
+        // Validate threshold
+        if threshold < 2 {
+            return err!(MultisigError::ThresholdTooLow);
+        }
+        if threshold as usize > owners.len() {
+            return err!(MultisigError::ThresholdExceedsOwners);
+        }
+
+        // Initialize the multisig wallet state
+        multisig.owners = owners;
+        multisig.threshold = threshold;
+        multisig.transaction_count = 0;
+        multisig.pending_transactions = Vec::new(); // Using Vec instead of HashMap for simplicity
+        multisig.balance = 0;
+
         Ok(())
     }
+
+    // Add more instructions here (e.g., propose_transaction, approve_transaction, etc.) as needed
 }
 
+// Accounts structure for initializing the multisig wallet
 #[derive(Accounts)]
-pub struct InitializeWallet<'info> {
+pub struct InitializeMultisig<'info> {
     #[account(
         init,
-        payer = owner,
-        space = 8 + MultisigWallet::LEN,
-        seeds = [b"multisig", owner.key().as_ref()],
+        payer = signer,
+        space = 8 + MultisigWallet::INITIAL_SIZE,
+        seeds = [b"multisig"],
         bump
     )]
-    pub multisig_wallet: Account<'info, MultisigWallet>,
+    pub multisig: Account<'info, MultisigWallet>,
     #[account(mut)]
-    pub owner: Signer<'info>,
-    pub system_program: Program<'info, System>,
-}
-
-#[derive(Accounts)]
-pub struct CreateTransaction<'info> {
-    #[account(mut)]
-    pub multisig_wallet: Account<'info, MultisigWallet>,
-    #[account(
-        init,
-        payer = proposer,
-        space = 8 + Transaction::LEN,
-        seeds = [b"transaction", multisig_wallet.key().as_ref(), &clock.unix_timestamp.to_le_bytes()],
-        bump
-    )]
-    pub transaction: Account<'info, Transaction>,
-    #[account(mut)]
-    pub proposer: Signer<'info>,
-    pub system_program: Program<'info, System>,
-    pub clock: Sysvar<'info, Clock>,
-}
-
-#[derive(Accounts)]
-pub struct ApproveTransaction<'info> {
-    #[account(mut)]
-    pub multisig_wallet: Account<'info, MultisigWallet>,
-    #[account(mut)]
-    pub transaction: Account<'info, Transaction>,
-    #[account(mut)]
-    pub token_account: Account<'info, TokenAccount>,
-    #[account(mut)]
-    pub destination_account: Account<'info, TokenAccount>,
     pub signer: Signer<'info>,
-    pub token_program: Program<'info, Token>,
+    pub system_program: Program<'info, System>,
 }
 
+// Multisig wallet account data structure
 #[account]
+#[derive(Default)]
 pub struct MultisigWallet {
-    pub owner: Pubkey,
-    pub required_signers: u8,
-    pub signers: Vec<Pubkey>,
-    pub is_initialized: bool,
-}
-
-#[account]
-pub struct Transaction {
-    pub wallet: Pubkey,
-    pub amount: u64,
-    pub destination: Pubkey,
-    pub proposer: Pubkey,
-    pub approvals: Vec<Pubkey>,
-    pub executed: bool,
+    pub owners: Vec<Pubkey>, // List of owner public keys
+    pub threshold: u8,       // Minimum number of approvals required
+    pub transaction_count: u64, // Counter for transactions
+    pub pending_transactions: Vec<Transaction>, // List of pending transactions
+    pub balance: u64,        // Wallet balance in lamports
 }
 
 impl MultisigWallet {
-    pub const LEN: usize = 32 + 1 + 4 + (32 * 10) + 1; // Rough estimate, adjust based on max signers
+    // Initial size estimate for space allocation (adjust as needed)
+    const INITIAL_SIZE: usize = 32 * 10 + // owners (assuming max 10 owners for now)
+        1 +                              // threshold
+        8 +                              // transaction_count
+        4 + (8 + 32 + 8 + 4 + 32 + 1) * 10 + // pending_transactions (assuming max 10 txs)
+        8;                               // balance
 }
 
-impl Transaction {
-    pub const LEN: usize = 32 + 8 + 32 + 32 + 4 + (32 * 10) + 1; // Rough estimate
+// Transaction data structure
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, Default)]
+pub struct Transaction {
+    pub id: u64,              // Transaction ID
+    pub to: Pubkey,           // Recipient's public key
+    pub amount: u64,          // Amount to send
+    pub approvals: Vec<Pubkey>, // List of approvers
+    pub executed: bool,       // Whether the transaction has been executed
 }
 
+// User category enum
+#[derive(AnchorSerialize, AnchorDeserialize, Clone, PartialEq)]
+pub enum UserCategory {
+    Free,
+    Pro,
+}
+
+// Error codes
 #[error_code]
 pub enum MultisigError {
-    #[msg("Unauthorized signer")]
-    Unauthorized,
-    #[msg("Already approved this transaction")]
-    AlreadyApproved,
+    #[msg("Number of owners exceeds the limit for this category")]
+    TooManyOwners,
+    #[msg("Threshold must be at least 2 to ensure collaboration")]
+    ThresholdTooLow,
+    #[msg("Threshold cannot exceed the number of owners")]
+    ThresholdExceedsOwners,
+}
+
+// Helper function to determine max owners based on category
+fn get_max_owners(category: &UserCategory) -> u8 {
+    match category {
+        UserCategory::Free => 3,  // Max owners for Free users
+        UserCategory::Pro => 10,  // Max owners for Pro users
+    }
 }
