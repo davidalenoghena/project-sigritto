@@ -1,7 +1,7 @@
 use anchor_lang::prelude::*;
 use anchor_lang::solana_program::pubkey::Pubkey;
 
-declare_id!("5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"); // Program ID
+declare_id!("5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"); // Replace with your actual program ID
 
 #[program]
 pub mod multisig_wallet {
@@ -42,6 +42,36 @@ pub mod multisig_wallet {
     }
 
     // Add more instructions here (e.g., propose_transaction, approve_transaction, etc.) as needed
+    /// Request a withdrawal from the multisig wallet
+    pub fn request_withdrawal(ctx: Context<RequestWithdrawal>, amount: u64) -> Result<()> {
+        let multisig = &mut ctx.accounts.multisig;
+        let requester = &ctx.accounts.signer;
+
+        // Ensure the requester is an owner
+        if !multisig.owners.contains(&requester.key()) {
+            return err!(MultisigError::NotAnOwner);
+        }
+
+        // Check if there’s enough balance
+        if amount > multisig.balance {
+            return err!(MultisigError::InsufficientBalance);
+        }
+
+        // Create a new transaction
+        let transaction_id = multisig.transaction_count;
+        multisig.transaction_count += 1;
+
+        let transaction = Transaction {
+            id: transaction_id,
+            to: requester.key(), // Assuming requester is withdrawing to themselves; adjust if needed
+            amount,
+            approvals: vec![requester.key()], // Requester auto-approves their request
+            executed: false,
+        };
+
+        multisig.pending_transactions.push(transaction);
+        Ok(())
+    }
 }
 
 // Accounts structure for initializing the multisig wallet
@@ -54,6 +84,15 @@ pub struct InitializeMultisig<'info> {
         seeds = [b"multisig"],
         bump
     )]
+    pub multisig: Account<'info, MultisigWallet>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct RequestWithdrawal<'info> {
+    #[account(mut)]
     pub multisig: Account<'info, MultisigWallet>,
     #[account(mut)]
     pub signer: Signer<'info>,
@@ -106,6 +145,10 @@ pub enum MultisigError {
     ThresholdTooLow,
     #[msg("Threshold cannot exceed the number of owners")]
     ThresholdExceedsOwners,
+    #[msg("Signer is not an owner of the multisig wallet")]
+    NotAnOwner,
+    #[msg("Insufficient balance in the multisig wallet")]
+    InsufficientBalance,
 }
 
 // Helper function to determine max owners based on category
