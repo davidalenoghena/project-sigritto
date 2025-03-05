@@ -41,6 +41,38 @@ pub mod multisig_wallet {
         Ok(())
     }
 
+    /// Add a new owner to the multisig wallet
+    pub fn add_owner(ctx: Context<AddOwner>, new_owner: Pubkey) -> Result<()> {
+        let multisig = &mut ctx.accounts.multisig;
+        let signer = &ctx.accounts.signer;
+
+        // Ensure the signer is an existing owner
+        if !multisig.owners.contains(&signer.key()) {
+            return err!(MultisigError::NotAnOwner);
+        }
+
+        // Check if the new owner is already in the list
+        if multisig.owners.contains(&new_owner) {
+            return err!(MultisigError::OwnerAlreadyExists);
+        }
+
+        // Check the maximum owner limit based on category
+        // let max_owners = get_max_owners(&multisig.category);
+        // if multisig.owners.len() >= max_owners as usize {
+        //     return err!(MultisigError::TooManyOwners);
+        // }
+
+        // Add the new owner
+        multisig.owners.push(new_owner);
+
+        // Ensure threshold remains valid (cannot exceed number of owners)
+        if multisig.threshold as usize > multisig.owners.len() {
+            multisig.threshold = multisig.owners.len() as u8;
+        }
+
+        Ok(())
+    }
+
     // Add more instructions here (e.g., propose_transaction, approve_transaction, etc.) as needed
     /// Request a withdrawal from the multisig wallet
     pub fn request_withdrawal(ctx: Context<RequestWithdrawal>, amount: u64) -> Result<()> {
@@ -88,6 +120,14 @@ pub struct InitializeMultisig<'info> {
     #[account(mut)]
     pub signer: Signer<'info>,
     pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct AddOwner<'info> {
+    #[account(mut)]
+    pub multisig: Account<'info, MultisigWallet>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
 }
 
 #[derive(Accounts)]
@@ -149,6 +189,8 @@ pub enum MultisigError {
     NotAnOwner,
     #[msg("Insufficient balance in the multisig wallet")]
     InsufficientBalance,
+    #[msg("Owner already exists in the multisig wallet")]
+    OwnerAlreadyExists,
 }
 
 // Helper function to determine max owners based on category
