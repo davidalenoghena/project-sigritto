@@ -36,44 +36,11 @@ pub mod multisig_wallet {
         multisig.threshold = threshold;
         multisig.transaction_count = 0;
         multisig.pending_transactions = Vec::new(); // Using Vec instead of HashMap for simplicity
-        multisig.balance = 0;
+        multisig.balance = 1000000;
 
         Ok(())
     }
-
-    /// Add a new owner to the multisig wallet
-    pub fn add_owner(ctx: Context<AddOwner>, new_owner: Pubkey) -> Result<()> {
-        let multisig = &mut ctx.accounts.multisig;
-        let signer = &ctx.accounts.signer;
-
-        // Ensure the signer is an existing owner
-        if !multisig.owners.contains(&signer.key()) {
-            return err!(MultisigError::NotAnOwner);
-        }
-
-        // Check if the new owner is already in the list
-        if multisig.owners.contains(&new_owner) {
-            return err!(MultisigError::OwnerAlreadyExists);
-        }
-
-        // Check the maximum owner limit based on category
-        // let max_owners = get_max_owners(&multisig.category);
-        // if multisig.owners.len() >= max_owners as usize {
-        //     return err!(MultisigError::TooManyOwners);
-        // }
-
-        // Add the new owner
-        multisig.owners.push(new_owner);
-
-        // Ensure threshold remains valid (cannot exceed number of owners)
-        if multisig.threshold as usize > multisig.owners.len() {
-            multisig.threshold = multisig.owners.len() as u8;
-        }
-
-        Ok(())
-    }
-
-    // Add more instructions here (e.g., propose_transaction, approve_transaction, etc.) as needed
+    
     /// Request a withdrawal from the multisig wallet
     pub fn request_withdrawal(ctx: Context<RequestWithdrawal>, amount: u64) -> Result<()> {
         let multisig = &mut ctx.accounts.multisig;
@@ -104,6 +71,50 @@ pub mod multisig_wallet {
         multisig.pending_transactions.push(transaction);
         Ok(())
     }
+
+    /// Approve a pending withdrawal request
+    pub fn approve_request(ctx: Context<ApproveRequest>, transaction_id: u64) -> Result<()> {
+        let multisig = &mut ctx.accounts.multisig;
+        let approver = &ctx.accounts.signer;
+
+        if !multisig.owners.contains(&approver.key()) {
+            return err!(MultisigError::NotAnOwner);
+        }
+
+        let transaction = multisig
+            .pending_transactions
+            .iter_mut()
+            .find(|t| t.id == transaction_id)
+            .ok_or(MultisigError::TransactionNotFound)?;
+
+        if transaction.executed {
+            return err!(MultisigError::TransactionAlreadyExecuted);
+        }
+        if transaction.approvals.contains(&approver.key()) {
+            return err!(MultisigError::AlreadyApproved);
+        }
+
+        transaction.approvals.push(approver.key());
+        Ok(())
+    }
+
+    /// Query the current balance of the multisig wallet (view function)
+    pub fn get_wallet_balance(ctx: Context<GetWalletBalance>) -> Result<u64> {
+        let multisig = &ctx.accounts.multisig;
+        Ok(multisig.balance)
+    }
+
+    /// Retrieve a list of pending transactions (view function)
+    pub fn get_pending_transactions(ctx: Context<GetPendingTransactions>) -> Result<Vec<Transaction>> {
+        let multisig = &ctx.accounts.multisig;
+        Ok(multisig.pending_transactions.clone())
+    }
+
+    /// Retrieve the list of current owners (view function)
+    pub fn get_owners(ctx: Context<GetOwners>) -> Result<Vec<Pubkey>> {
+        let multisig = &ctx.accounts.multisig;
+        Ok(multisig.owners.clone())
+    }
 }
 
 // Accounts structure for initializing the multisig wallet
@@ -123,7 +134,16 @@ pub struct InitializeMultisig<'info> {
 }
 
 #[derive(Accounts)]
-pub struct AddOwner<'info> {
+pub struct RequestWithdrawal<'info> {
+    #[account(mut)]
+    pub multisig: Account<'info, MultisigWallet>,
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct ApproveRequest<'info> {
     #[account(mut)]
     pub multisig: Account<'info, MultisigWallet>,
     #[account(mut)]
@@ -131,12 +151,18 @@ pub struct AddOwner<'info> {
 }
 
 #[derive(Accounts)]
-pub struct RequestWithdrawal<'info> {
-    #[account(mut)]
+pub struct GetWalletBalance<'info> {
     pub multisig: Account<'info, MultisigWallet>,
-    #[account(mut)]
-    pub signer: Signer<'info>,
-    pub system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct GetPendingTransactions<'info> {
+    pub multisig: Account<'info, MultisigWallet>,
+}
+
+#[derive(Accounts)]
+pub struct GetOwners<'info> {
+    pub multisig: Account<'info, MultisigWallet>,
 }
 
 // Multisig wallet account data structure
@@ -181,6 +207,8 @@ pub enum UserCategory {
 pub enum MultisigError {
     #[msg("Number of owners exceeds the limit for this category")]
     TooManyOwners,
+    #[msg("Number of owners not enough for multisig")]
+    TooFewOwners,
     #[msg("Threshold must be at least 2 to ensure collaboration")]
     ThresholdTooLow,
     #[msg("Threshold cannot exceed the number of owners")]
@@ -191,6 +219,14 @@ pub enum MultisigError {
     InsufficientBalance,
     #[msg("Owner already exists in the multisig wallet")]
     OwnerAlreadyExists,
+    #[msg("Transaction already executed")]
+    TransactionAlreadyExecuted,
+    #[msg("Signer has already approved this transaction")]
+    AlreadyApproved,
+    #[msg("Transaction not found")]
+    TransactionNotFound,
+    #[msg("Threshold not met for execution")]
+    ThresholdNotMet,
 }
 
 // Helper function to determine max owners based on category
