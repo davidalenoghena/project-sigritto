@@ -1,5 +1,6 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::pubkey::Pubkey;
+//use anchor_lang::solana_program::pubkey::Pubkey;
+use anchor_lang::solana_program::{pubkey::Pubkey, system_instruction};
 
 declare_id!("5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"); // Replace with your actual program ID
 
@@ -98,6 +99,58 @@ pub mod multisig_wallet {
         Ok(())
     }
 
+    /// Execute a pending withdrawal request once threshold is met
+    pub fn execute_request(ctx: Context<ExecuteRequest>, transaction_id: u64) -> Result<()> {
+    // Extract necessary data before mutable borrows
+    let threshold = ctx.accounts.multisig.threshold;
+    let balance = ctx.accounts.multisig.balance;
+    let multisig_key = ctx.accounts.multisig.key();
+    let bump = ctx.bumps.multisig;
+
+    // Create mutable references after extracting data
+    let multisig = &mut ctx.accounts.multisig;
+    let transaction_index = multisig
+        .pending_transactions
+        .iter()
+        .position(|t| t.id == transaction_id)
+        .ok_or(MultisigError::TransactionNotFound)?;
+    
+    // Extract required data from transaction before mutation
+    let (to, amount) = {
+        let transaction = &multisig.pending_transactions[transaction_index];
+        (transaction.to, transaction.amount)
+    };
+
+    // Perform checks using pre-extracted values
+    require!(!multisig.pending_transactions[transaction_index].executed, MultisigError::TransactionAlreadyExecuted);
+    require!(multisig.pending_transactions[transaction_index].approvals.len() as u8 >= threshold, MultisigError::ThresholdNotMet);
+    require!(amount <= balance, MultisigError::InsufficientBalance);
+
+    // Perform the transfer using the extracted data
+    let transfer_instruction = system_instruction::transfer(
+        &multisig_key,
+        &to,
+        amount,
+    );
+    
+    anchor_lang::solana_program::program::invoke_signed(
+        &transfer_instruction,
+        &[
+            multisig.to_account_info(), // Use existing mutable reference
+            ctx.accounts.recipient.to_account_info(),
+            ctx.accounts.system_program.to_account_info(),
+        ],
+        &[&[b"multisig", &[bump]]],
+    )?;
+
+    // Update state after transfer
+    multisig.balance -= amount;
+    multisig.pending_transactions[transaction_index].executed = true;
+    multisig.pending_transactions.remove(transaction_index);
+    
+    Ok(())
+}
+
     /// Query the current balance of the multisig wallet (view function)
     pub fn get_wallet_balance(ctx: Context<GetWalletBalance>) -> Result<u64> {
         let multisig = &ctx.accounts.multisig;
@@ -115,6 +168,22 @@ pub mod multisig_wallet {
         let multisig = &ctx.accounts.multisig;
         Ok(multisig.owners.clone())
     }
+}
+
+// New accounts structure for execute_request
+#[derive(Accounts)]
+pub struct ExecuteRequest<'info> {
+    #[account(
+        mut,
+        seeds = [b"multisig"],
+        bump,
+    )]
+    pub multisig: Account<'info, MultisigWallet>,
+    #[account(mut)]
+    pub recipient: AccountInfo<'info>,  // The destination account
+    #[account(mut)]
+    pub signer: Signer<'info>,
+    pub system_program: Program<'info, System>,
 }
 
 // Accounts structure for initializing the multisig wallet
