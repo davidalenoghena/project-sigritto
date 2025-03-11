@@ -91,7 +91,8 @@ export default function TransactionDetails() {
     const [approving, setApproving] = useState(false)
     const [rejecting, setRejecting] = useState(false)
     const [executing, setExecuting] = useState(false)
-    const [currentUserIsOwner, setCurrentUserIsOwner] = useState(true) // Mock - would be determined by wallet connection
+    //const [currentUserIsOwner, setCurrentUserIsOwner] = useState(true) // Mock - would be determined by wallet connection Commented this for now because of unused variable setCurrentUserIsOwner
+    const [currentUserIsOwner] = useState(true) // Mock - would be determined by wallet connection
     const [currentUserHasApproved, setCurrentUserHasApproved] = useState(false)
 
     useEffect(() => {
@@ -116,7 +117,7 @@ export default function TransactionDetails() {
                 setTransaction(tx)
 
                 // Mock user state - in production, would check if current wallet has approved
-                setCurrentUserHasApproved(tx.approvals.includes("Alice"))
+                //setCurrentUserHasApproved(tx.approvals.includes("Alice")) Commented this for now because of tx.approvals.includes("Alice") isn't yet functional
             } catch (error) {
                 console.error("Error fetching transaction:", error)
             } finally {

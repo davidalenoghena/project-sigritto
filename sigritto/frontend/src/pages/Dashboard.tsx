@@ -31,7 +31,8 @@ const mockWallets = [
 ]
 
 export default function Dashboard() {
-    const [wallets, setWallets] = useState(mockWallets)
+    //const [wallets, setWallets] = useState(mockWallets) - Commented this for now because of unused variable setWallets
+    const [wallets] = useState(mockWallets)
     const [isConnected, setIsConnected] = useState(false)
 
     // Mock wallet connection

@@ -97,6 +97,7 @@ export default function WalletDetails() {
     const walletId = params.id
     const [wallet, setWallet] = useState<any>(null)
     const [loading, setLoading] = useState(true)
+    //const [activeTab, setActiveTab] = useState("overview") Commented this for now because of unused variable activeTab
     const [activeTab, setActiveTab] = useState("overview")
 
     useEffect(() => {
@@ -248,7 +249,7 @@ export default function WalletDetails() {
                             </Card>
                         </div>
 
-                        <Tabs defaultValue="overview" className="w-full" onValueChange={setActiveTab}>
+                        <Tabs defaultValue={activeTab} className="w-full" onValueChange={setActiveTab}>
                             <TabsList className="bg-gray-900/50 border-gray-800">
                                 <TabsTrigger value="overview">Overview</TabsTrigger>
                                 <TabsTrigger value="transactions">Transactions</TabsTrigger>
