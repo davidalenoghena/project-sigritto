@@ -3,6 +3,7 @@
 import { Button } from "../components/ui/button"
 import { motion } from "framer-motion"
 import { Wallet, Sparkles } from "lucide-react"
+import { Link } from "react-router-dom"
 import { FloatingPaper } from "@/components/floating-paper"
 import { RoboAnimation } from "@/components/robo-animation"
 
@@ -42,10 +43,12 @@ export default function Hero() {
             transition={{ duration: 0.5, delay: 0.4 }}
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
-            <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8">
+            <Link to={`/create-wallet`}>
+              <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8">
               <Wallet className="mr-2 h-5 w-5" />
               Create Now
-            </Button>
+              </Button>
+            </Link>
             <Button size="lg" variant="outline" className="text-white border-purple-500 hover:bg-purple-500/20">
               <Sparkles className="mr-2 h-5 w-5" />
               Talk to Fabian
