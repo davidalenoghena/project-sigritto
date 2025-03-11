@@ -26,13 +26,13 @@ const mockTransactionData = {
             description: "Marketing expenses",
             requester: "Alice",
             requestedAt: "2025-03-09T15:30:00Z",
-            approvals: ["Alice"],
+            approvals: ["David"],
             status: "pending",
             threshold: 2,
             owners: [
-                { address: "8xF3hPFYbkmpPVKr87ntjuUxPTPayY6qLJHLM4YCyUMd", label: "Alice" },
-                { address: "7YHZ3rfpGzLEFYmxrxCU1Qpde2wHUBQJYnfPmkwmWMNB", label: "Bob" },
-                { address: "3zQ9CtDkTx4PQgHsrNcNJfNzPAM1VeXzh6JfyAYPwqMT", label: "Charlie" },
+                { address: "8xF3hPFYbkmpPVKr87ntjuUxPTPayY6qLJHLM4YCyUMd", label: "David" },
+                { address: "7YHZ3rfpGzLEFYmxrxCU1Qpde2wHUBQJYnfPmkwmWMNB", label: "Fabian" },
+                { address: "3zQ9CtDkTx4PQgHsrNcNJfNzPAM1VeXzh6JfyAYPwqMT", label: "Isaac" },
             ],
         },
         tx2: {
@@ -46,13 +46,13 @@ const mockTransactionData = {
             requester: "Bob",
             requestedAt: "2025-03-05T10:15:00Z",
             completedAt: "2025-03-05T14:22:00Z",
-            approvals: ["Bob", "Charlie"],
+            approvals: ["Fabian", "Isaac"],
             status: "completed",
             threshold: 2,
             owners: [
-                { address: "8xF3hPFYbkmpPVKr87ntjuUxPTPayY6qLJHLM4YCyUMd", label: "Alice" },
-                { address: "7YHZ3rfpGzLEFYmxrxCU1Qpde2wHUBQJYnfPmkwmWMNB", label: "Bob" },
-                { address: "3zQ9CtDkTx4PQgHsrNcNJfNzPAM1VeXzh6JfyAYPwqMT", label: "Charlie" },
+                { address: "8xF3hPFYbkmpPVKr87ntjuUxPTPayY6qLJHLM4YCyUMd", label: "David" },
+                { address: "7YHZ3rfpGzLEFYmxrxCU1Qpde2wHUBQJYnfPmkwmWMNB", label: "Fabian" },
+                { address: "3zQ9CtDkTx4PQgHsrNcNJfNzPAM1VeXzh6JfyAYPwqMT", label: "Isaac" },
             ],
         },
     },
@@ -65,16 +65,16 @@ const mockTransactionData = {
             amount: 1.0,
             recipient: "4YHZ3rfpGzLEFYmxrxCU1Qpde2wHUBQJYnfPmkwmWMNB",
             description: "Development milestone",
-            requester: "Dave",
+            requester: "David",
             requestedAt: "2025-03-07T09:20:00Z",
             completedAt: "2025-03-07T16:45:00Z",
-            approvals: ["Dave", "Alice"],
+            approvals: ["Fabian", "David"],
             status: "completed",
             threshold: 2,
             owners: [
-                { address: "8xF3hPFYbkmpPVKr87ntjuUxPTPayY6qLJHLM4YCyUMd", label: "Alice" },
-                { address: "5YHZ3rfpGzLEFYmxrxCU1Qpde2wHUBQJYnfPmkwmWMNB", label: "Dave" },
-                { address: "2zQ9CtDkTx4PQgHsrNcNJfNzPAM1VeXzh6JfyAYPwqMT", label: "Eve" },
+                { address: "8xF3hPFYbkmpPVKr87ntjuUxPTPayY6qLJHLM4YCyUMd", label: "David" },
+                { address: "5YHZ3rfpGzLEFYmxrxCU1Qpde2wHUBQJYnfPmkwmWMNB", label: "Fabian" },
+                { address: "2zQ9CtDkTx4PQgHsrNcNJfNzPAM1VeXzh6JfyAYPwqMT", label: "Isaac" },
             ],
         },
     },
@@ -156,7 +156,7 @@ export default function TransactionDetails() {
             // Update local state to reflect approval
             setTransaction({
                 ...transaction,
-                approvals: [...transaction.approvals, "Alice"],
+                approvals: [...transaction.approvals, "David"],
             })
             setCurrentUserHasApproved(true)
         } catch (error) {
