@@ -2,9 +2,11 @@
   "ExpandedNodes": [
     "",
     "\\sigritto",
+    "\\sigritto\\frontend",
+    "\\sigritto\\frontend\\src",
     "\\sigritto\\frontend\\src\\lib",
     "\\sigritto\\frontend\\src\\pages"
   ],
-  "SelectedNode": "\\sigritto\\.gitignore",
+  "SelectedNode": "\\sigritto\\frontend\\src\\pages\\Dashboard.tsx",
   "PreviewInSolutionExplorer": false
 }

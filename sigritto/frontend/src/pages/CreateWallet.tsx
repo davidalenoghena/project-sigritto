@@ -143,7 +143,7 @@ export default function CreateWallet() {
                                             <div key={index} className="grid grid-cols-12 gap-2 items-center">
                                                 <div className="col-span-5">
                                                     <Input
-                                                        placeholder="Owner Label (e.g. Alice)"
+                                                        placeholder="Owner Label (e.g. David)"
                                                         value={owner.label}
                                                         onChange={(e) => updateOwner(index, "label", e.target.value)}
                                                         className="bg-gray-800/50 border-gray-700"
