@@ -52,7 +52,7 @@ pub mod multisig_wallet {
             return err!(MultisigError::NotAnOwner);
         }
 
-        // Check if there s enough balance
+        // Check if there’s enough balance
         if amount > multisig.balance {
             return err!(MultisigError::InsufficientBalance);
         }
@@ -179,8 +179,6 @@ pub struct ExecuteRequest<'info> {
         bump,
     )]
     pub multisig: Account<'info, MultisigWallet>,
-    
-    /// CHECK: The recipient is safely validated in the instruction logic.
     #[account(mut)]
     pub recipient: AccountInfo<'info>,  // The destination account
     #[account(mut)]
