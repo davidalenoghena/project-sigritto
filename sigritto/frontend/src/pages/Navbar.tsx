@@ -6,6 +6,7 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+import { CustomWalletMultiButton } from "@/components/walletConnect";
 
 const navItems = [
   { name: "How it Works", path: "/how-it-works" },
@@ -51,12 +52,7 @@ export default function Navbar() {
           </div>
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
-              <Link
-                to="/walletConnect"
-                className="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-md text-sm font-medium"
-              >
-                Connect Wallet
-              </Link>
+               <CustomWalletMultiButton />
             </div>
           </div>
           <div className="md:hidden flex items-center">
