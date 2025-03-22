@@ -5,8 +5,11 @@
     "\\sigritto\\frontend",
     "\\sigritto\\frontend\\src",
     "\\sigritto\\frontend\\src\\lib",
-    "\\sigritto\\frontend\\src\\pages"
+    "\\sigritto\\frontend\\src\\pages",
+    "\\sigritto\\programs",
+    "\\sigritto\\programs\\sigritto",
+    "\\sigritto\\programs\\sigritto\\src"
   ],
-  "SelectedNode": "\\sigritto\\frontend\\src\\pages\\Dashboard.tsx",
+  "SelectedNode": "\\sigritto\\Anchor.toml",
   "PreviewInSolutionExplorer": false
 }

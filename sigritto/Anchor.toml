@@ -6,13 +6,16 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-sigritto = "2ozqMut8UKfiW9CxazuzqwLi9Bxd1NnVwXhbc3VZe8bQ"
+sigritto = "5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"
+
+[programs.testnet]
+sigritto = "5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"
 
 [registry]
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "https://api.testnet.sonic.game"
 wallet = "~/.config/solana/id.json"
 
 [scripts]

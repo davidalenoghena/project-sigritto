@@ -6,7 +6,6 @@ import { Wallet, Sparkles } from "lucide-react"
 import { Link } from "react-router-dom"
 import { FloatingPaper } from "@/components/floating-paper"
 import { RoboAnimation } from "@/components/robo-animation"
-
 export default function Hero() {
   return (
     <div className="relative min-h-[calc(100vh-76px)] flex items-center">
