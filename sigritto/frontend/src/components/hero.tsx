@@ -43,15 +43,24 @@ export default function Hero() {
             className="flex flex-col sm:flex-row items-center justify-center gap-4"
           >
             <Link to={`/create-wallet`}>
-              <Button size="lg" className="bg-purple-600 hover:bg-purple-700 text-white px-8">
-              <Wallet className="mr-2 h-5 w-5" />
-              Create Now
+              <Button
+                    size="lg"
+                    className="bg-purple-600 hover:bg-purple-700 text-white px-8"
+                    style={{ borderRadius: '0.375rem' }}
+                >
+                    <Wallet className="mr-2 h-5 w-5" />
+                    Create Now
               </Button>
             </Link>
-            <Button size="lg" variant="outline" className="text-white border-purple-500 hover:bg-purple-500/20">
-              <Sparkles className="mr-2 h-5 w-5" />
-              Talk to Fabian
-            </Button>
+              <Button
+                    size="lg"
+                    variant="outline"
+                    className="text-white border-purple-500 hover:bg-purple-500/20"
+                    style={{ borderRadius: '0.375rem' }}
+                >
+                    <Sparkles className="mr-2 h-5 w-5" />
+                    Talk to Fabian
+              </Button>
           </motion.div>
         </div>
       </div>

@@ -3,44 +3,16 @@
   "WorkspaceRootPath": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\",
   "Documents": [
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\tempApp.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\tempApp.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\main.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\main.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\walletConnect.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\components\\walletConnect.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
       "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\App.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
       "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\App.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     },
     {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\pages\\multisigDashboard.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\pages\\multisigDashboard.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\temp_main.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\temp_main.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\programs\\sigritto\\src\\lib.rs||{8B382828-6202-11D1-8870-0000F87579D2}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\programs\\sigritto\\src\\lib.rs||{8B382828-6202-11D1-8870-0000F87579D2}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\walletConnect.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\components\\walletConnect.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\MultisigClient.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\components\\MultisigClient.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\target\\idl\\multisig_wallet.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\target\\idl\\multisig_wallet.json||{90A6B3A7-C1A3-4009-A288-E2FF89E96FA0}"
-    },
-    {
-      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\hero.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
-      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\components\\hero.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
+      "AbsoluteMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\ui\\deleted\\OldApp.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}",
+      "RelativeMoniker": "D:0:0:{A2FE74E1-B743-11D0-AE1A-00A0C90FFFC3}|\u003CMiscFiles\u003E|solutionrelative:sigritto\\frontend\\src\\components\\ui\\deleted\\OldApp.tsx||{0F2454B1-A556-402D-A7D0-1FDE7F99DEE0}"
     }
   ],
   "DocumentGroupContainers": [
@@ -50,7 +22,7 @@
       "DocumentGroups": [
         {
           "DockedWidth": 200,
-          "SelectedChildIndex": 4,
+          "SelectedChildIndex": 2,
           "Children": [
             {
               "$type": "Bookmark",
@@ -62,128 +34,42 @@
             },
             {
               "$type": "Document",
-              "DocumentIndex": 4,
-              "Title": "temp_main.tsx",
-              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\temp_main.tsx",
-              "RelativeDocumentMoniker": "sigritto\\frontend\\src\\temp_main.tsx",
-              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\temp_main.tsx",
-              "RelativeToolTip": "sigritto\\frontend\\src\\temp_main.tsx",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-03-20T19:05:49.859Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 1,
-              "Title": "main.tsx",
-              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\main.tsx",
-              "RelativeDocumentMoniker": "sigritto\\frontend\\src\\main.tsx",
-              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\main.tsx",
-              "RelativeToolTip": "sigritto\\frontend\\src\\main.tsx",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAABAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-03-20T19:04:53.61Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
               "DocumentIndex": 0,
-              "Title": "tempApp.tsx",
-              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\tempApp.tsx",
-              "RelativeDocumentMoniker": "sigritto\\frontend\\src\\tempApp.tsx",
-              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\tempApp.tsx",
-              "RelativeToolTip": "sigritto\\frontend\\src\\tempApp.tsx",
-              "ViewState": "AgIAADIAAAAAIgAAAAAAwJMAAAAmAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-03-20T19:04:32.512Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 3,
-              "Title": "multisigDashboard.tsx",
-              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\pages\\multisigDashboard.tsx",
-              "RelativeDocumentMoniker": "sigritto\\frontend\\src\\pages\\multisigDashboard.tsx",
-              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\pages\\multisigDashboard.tsx",
-              "RelativeToolTip": "sigritto\\frontend\\src\\pages\\multisigDashboard.tsx",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-03-20T14:10:38.124Z",
-              "EditorCaption": ""
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 6,
               "Title": "walletConnect.tsx",
               "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\walletConnect.tsx",
               "RelativeDocumentMoniker": "sigritto\\frontend\\src\\components\\walletConnect.tsx",
               "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\walletConnect.tsx",
               "RelativeToolTip": "sigritto\\frontend\\src\\components\\walletConnect.tsx",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAsAAAAUAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-03-20T13:41:19.087Z"
+              "WhenOpened": "2025-03-21T15:46:01.639Z",
+              "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 7,
-              "Title": "MultisigClient.tsx",
-              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\MultisigClient.tsx",
-              "RelativeDocumentMoniker": "sigritto\\frontend\\src\\components\\MultisigClient.tsx",
-              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\MultisigClient.tsx",
-              "RelativeToolTip": "sigritto\\frontend\\src\\components\\MultisigClient.tsx",
-              "ViewState": "AgIAABIAAABgzMzMzMwnwAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-03-20T13:41:11.528Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 8,
-              "Title": "multisig_wallet.json",
-              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\target\\idl\\multisig_wallet.json",
-              "RelativeDocumentMoniker": "sigritto\\target\\idl\\multisig_wallet.json",
-              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\target\\idl\\multisig_wallet.json",
-              "RelativeToolTip": "sigritto\\target\\idl\\multisig_wallet.json",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.001642|",
-              "WhenOpened": "2025-03-20T13:10:49.14Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 9,
-              "Title": "hero.tsx",
-              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\hero.tsx",
-              "RelativeDocumentMoniker": "sigritto\\frontend\\src\\components\\hero.tsx",
-              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\hero.tsx",
-              "RelativeToolTip": "sigritto\\frontend\\src\\components\\hero.tsx",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAgAAAAgAAAAAAAAAA==",
-              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-03-19T11:17:33.969Z"
-            },
-            {
-              "$type": "Document",
-              "DocumentIndex": 2,
+              "DocumentIndex": 1,
               "Title": "App.tsx",
               "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\App.tsx",
               "RelativeDocumentMoniker": "sigritto\\frontend\\src\\App.tsx",
               "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\App.tsx",
               "RelativeToolTip": "sigritto\\frontend\\src\\App.tsx",
-              "ViewState": "AgIAAAAAAAAAAAAAAAAAABsAAAAZAAAAAAAAAA==",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAAAkAAAAzAAAAAAAAAA==",
               "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
-              "WhenOpened": "2025-03-18T18:52:47.754Z",
+              "WhenOpened": "2025-03-21T15:41:02.332Z",
               "EditorCaption": ""
             },
             {
               "$type": "Document",
-              "DocumentIndex": 5,
-              "Title": "lib.rs",
-              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\programs\\sigritto\\src\\lib.rs",
-              "RelativeDocumentMoniker": "sigritto\\programs\\sigritto\\src\\lib.rs",
-              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\programs\\sigritto\\src\\lib.rs",
-              "RelativeToolTip": "sigritto\\programs\\sigritto\\src\\lib.rs",
-              "ViewState": "AgIAABgBAAAAAAAAAAAAACIBAAA5AAAAAAAAAA==",
-              "Icon": "00000000-0000-0000-0000-000000000000.000000|",
-              "WhenOpened": "2025-03-20T13:45:40.261Z"
+              "DocumentIndex": 2,
+              "Title": "OldApp.tsx",
+              "DocumentMoniker": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\ui\\deleted\\OldApp.tsx",
+              "RelativeDocumentMoniker": "sigritto\\frontend\\src\\components\\ui\\deleted\\OldApp.tsx",
+              "ToolTip": "C:\\Users\\PC\\Documents\\ProJects\\Web3\\project-sigritto\\sigritto\\frontend\\src\\components\\ui\\deleted\\OldApp.tsx",
+              "RelativeToolTip": "sigritto\\frontend\\src\\components\\ui\\deleted\\OldApp.tsx",
+              "ViewState": "AgIAAAAAAAAAAAAAAAAAABQAAAAAAAAAAAAAAA==",
+              "Icon": "ae27a6b0-e345-4288-96df-5eaf394ee369.003663|",
+              "WhenOpened": "2025-03-21T15:40:37.453Z",
+              "EditorCaption": ""
             }
           ]
         }
