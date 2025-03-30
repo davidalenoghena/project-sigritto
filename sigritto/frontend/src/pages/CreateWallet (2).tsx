@@ -1,4 +1,4 @@
-﻿"use client"
+"use client"
 
 import type React from "react";
 
@@ -13,33 +13,74 @@ import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 
-import {
-    useSigrittoProgram,
-    useSigrittoProgramAccount,
-} from "../components/sigritto_data/sigritto-data-access";
+import idl from "../../../target/idl/multisig_wallet.json";
+import type { MultisigWallet } from "../../../target/types/multisig_wallet";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { Program, Idl, AnchorProvider, setProvider } from "@coral-xyz/anchor";
+import { PublicKey, SystemProgram } from '@solana/web3.js';
 
-import { useWallet } from "@solana/wallet-adapter-react";
-import { UserCategory } from '../components/sigritto_data/sigritto-exports';
-
+const programId = new PublicKey('5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp');
 
 export default function CreateWallet() {
-    const { initialize } = useSigrittoProgram();
-    const { publicKey } = useWallet();
-    const navigate = useNavigate()
+    const { connection } = useConnection();
+    const wallet = useAnchorWallet();
 
-    // Form states
+    if (!wallet) {
+        console.log('Please connect your wallet');
+        return;
+    }
+
+    const provider = new AnchorProvider(connection, wallet, {});
+    setProvider(provider);
+
+    const program = new Program(idl as MultisigWallet, provider);
+
+    const handleInitialize = async () => {
+        try {
+            // Derive the multisig wallet's PDA (Program Derived Address)
+            const [multisigPda] = await PublicKey.findProgramAddress(
+                [Buffer.from('multisig')],
+                programId
+            );
+
+            // Example inputs (replace with user-provided values in a real app)
+            const owner2 = new PublicKey('5jA00TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp'); // Replace with a real key
+            const owners: PublicKey[] = [wallet.publicKey, owner2];
+            const threshold: number = 2; // Number of signatures required
+            const category = { free: {} }; // Category of the multisig (e.g., free or pro)
+
+            // Validate inputs
+            const maxOwners = 'free' in category ? 3 : 10;
+            if (owners.length > maxOwners) {
+                throw new Error(`Too many owners. Max allowed: ${maxOwners}`);
+            }
+            if (threshold < 2 || threshold > owners.length) {
+                throw new Error('Threshold must be at least 2 and not exceed the number of owners');
+            }
+
+            // Execute the transaction
+            const transactionSignature = await program.methods
+                .initializeMultisigWallet(owners, threshold, category)
+                .accounts({
+                    signer: wallet.publicKey,
+                })
+                .rpc();
+
+            console.log({ transactionSignature });
+        }
+        catch (err) {
+            console.log("error error");
+        }
+    };
+
+    const navigate = useNavigate()
     const [walletName, setWalletName] = useState("")
     const [owners, setOwners] = useState([
         { address: "", label: "" },
         { address: "", label: "" },
     ])
     const [threshold, setThreshold] = useState(2)
-    const [category, setCategory] = useState<UserCategory>(UserCategory.Free)
     const [isSubmitting, setIsSubmitting] = useState(false)
-
-    if (!publicKey) {
-        return <div>Please connect your wallet first</div>;
-    }
 
     const addOwner = () => {
         if (owners.length < 5) {
@@ -53,6 +94,7 @@ export default function CreateWallet() {
             newOwners.splice(index, 1)
             setOwners(newOwners)
 
+            // Adjust threshold if needed
             if (threshold > newOwners.length) {
                 setThreshold(newOwners.length)
             }
@@ -69,15 +111,18 @@ export default function CreateWallet() {
         e.preventDefault()
         setIsSubmitting(true)
 
+        // Mock wallet creation - would call your Solana program in production
         try {
-            const ownerAddresses = owners.map(owner => owner.address)
+            // Simulate API call
+            await new Promise((resolve) => setTimeout(resolve, 1500))
 
-            await initialize.mutateAsync({
-                owners: ownerAddresses,
+            console.log({
+                name: walletName,
+                owners,
                 threshold,
-                category,
             })
 
+            // Redirect to dashboard on success
             navigate("/dashboard")
         } catch (error) {
             console.error("Error creating wallet:", error)
@@ -88,6 +133,7 @@ export default function CreateWallet() {
 
     return (
         <main className="min-h-screen bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
+            {/* Ambient background with moving particles */}
             <div className="h-full w-full absolute inset-0 z-0">
                 <SparklesCore
                     id="tsparticlesfullpage"
@@ -101,6 +147,7 @@ export default function CreateWallet() {
             </div>
 
             <div className="relative z-10">
+
                 <div className="container mx-auto px-6 py-8">
                     <Link to="/dashboard" className="inline-flex items-center text-purple-400 hover:text-purple-300 mb-6">
                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -211,28 +258,11 @@ export default function CreateWallet() {
                                         </p>
                                     </div>
 
-                                    <div className="space-y-2">
-                                        <Label htmlFor="category" className="text-white">
-                                            User Category
-                                        </Label>
-                                        <Select
-                                            value={category}
-                                            onValueChange={(value) => setCategory(value as UserCategory)}
-                                        >
-                                            <SelectTrigger className="bg-gray-800/50 border-gray-700">
-                                                <SelectValue placeholder="Select category" />
-                                            </SelectTrigger>
-                                            <SelectContent>
-                                                <SelectItem value={UserCategory.Free}>Free Tier</SelectItem>
-                                                <SelectItem value={UserCategory.Pro}>Pro Tier</SelectItem>
-                                            </SelectContent>
-                                        </Select>
-                                    </div>
-
                                     <Button
                                         type="submit"
                                         className="w-full bg-purple-600 hover:bg-purple-700"
                                         disabled={isSubmitting}
+                                        onClick={handleInitialize}
                                     >
                                         {isSubmitting ? "Creating..." : "Create Multisig Wallet"}
                                     </Button>
@@ -245,3 +275,4 @@ export default function CreateWallet() {
         </main>
     )
 }
+

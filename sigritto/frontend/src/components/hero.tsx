@@ -72,5 +72,3 @@ export default function Hero() {
     </div>
   )
 }
-
-//dslfjlifj

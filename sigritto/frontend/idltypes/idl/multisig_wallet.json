@@ -1,0 +1,438 @@
+{
+  "address": "5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp",
+  "metadata": {
+    "name": "multisig_wallet",
+    "version": "0.1.0",
+    "spec": "0.1.0",
+    "description": "Created with Anchor"
+  },
+  "instructions": [
+    {
+      "name": "approve_request",
+      "docs": [
+        "Approve a pending withdrawal request"
+      ],
+      "discriminator": [
+        89,
+        68,
+        167,
+        104,
+        93,
+        25,
+        178,
+        205
+      ],
+      "accounts": [
+        {
+          "name": "multisig",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        }
+      ],
+      "args": [
+        {
+          "name": "transaction_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "execute_request",
+      "docs": [
+        "Execute a pending withdrawal request once threshold is met"
+      ],
+      "discriminator": [
+        113,
+        254,
+        117,
+        135,
+        26,
+        14,
+        232,
+        88
+      ],
+      "accounts": [
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "recipient",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "transaction_id",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "get_owners",
+      "docs": [
+        "Retrieve the list of current owners (view function)"
+      ],
+      "discriminator": [
+        204,
+        58,
+        71,
+        128,
+        202,
+        150,
+        123,
+        65
+      ],
+      "accounts": [
+        {
+          "name": "multisig"
+        }
+      ],
+      "args": [],
+      "returns": {
+        "vec": "pubkey"
+      }
+    },
+    {
+      "name": "get_pending_transactions",
+      "docs": [
+        "Retrieve a list of pending transactions (view function)"
+      ],
+      "discriminator": [
+        255,
+        208,
+        163,
+        77,
+        86,
+        47,
+        202,
+        124
+      ],
+      "accounts": [
+        {
+          "name": "multisig"
+        }
+      ],
+      "args": [],
+      "returns": {
+        "vec": {
+          "defined": {
+            "name": "Transaction"
+          }
+        }
+      }
+    },
+    {
+      "name": "get_wallet_balance",
+      "docs": [
+        "Query the current balance of the multisig wallet (view function)"
+      ],
+      "discriminator": [
+        30,
+        0,
+        146,
+        170,
+        168,
+        235,
+        151,
+        58
+      ],
+      "accounts": [
+        {
+          "name": "multisig"
+        }
+      ],
+      "args": [],
+      "returns": "u64"
+    },
+    {
+      "name": "initialize_multisig_wallet",
+      "docs": [
+        "Initialize the multisig wallet"
+      ],
+      "discriminator": [
+        145,
+        90,
+        157,
+        235,
+        35,
+        6,
+        20,
+        37
+      ],
+      "accounts": [
+        {
+          "name": "multisig",
+          "writable": true,
+          "pda": {
+            "seeds": [
+              {
+                "kind": "const",
+                "value": [
+                  109,
+                  117,
+                  108,
+                  116,
+                  105,
+                  115,
+                  105,
+                  103
+                ]
+              }
+            ]
+          }
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "owners",
+          "type": {
+            "vec": "pubkey"
+          }
+        },
+        {
+          "name": "threshold",
+          "type": "u8"
+        },
+        {
+          "name": "category",
+          "type": {
+            "defined": {
+              "name": "UserCategory"
+            }
+          }
+        }
+      ]
+    },
+    {
+      "name": "request_withdrawal",
+      "docs": [
+        "Request a withdrawal from the multisig wallet"
+      ],
+      "discriminator": [
+        251,
+        85,
+        121,
+        205,
+        56,
+        201,
+        12,
+        177
+      ],
+      "accounts": [
+        {
+          "name": "multisig",
+          "writable": true
+        },
+        {
+          "name": "signer",
+          "writable": true,
+          "signer": true
+        },
+        {
+          "name": "system_program",
+          "address": "11111111111111111111111111111111"
+        }
+      ],
+      "args": [
+        {
+          "name": "amount",
+          "type": "u64"
+        }
+      ]
+    }
+  ],
+  "accounts": [
+    {
+      "name": "MultisigWallet",
+      "discriminator": [
+        32,
+        135,
+        234,
+        172,
+        132,
+        39,
+        242,
+        66
+      ]
+    }
+  ],
+  "errors": [
+    {
+      "code": 6000,
+      "name": "TooManyOwners",
+      "msg": "Number of owners exceeds the limit for this category"
+    },
+    {
+      "code": 6001,
+      "name": "TooFewOwners",
+      "msg": "Number of owners not enough for multisig"
+    },
+    {
+      "code": 6002,
+      "name": "ThresholdTooLow",
+      "msg": "Threshold must be at least 2 to ensure collaboration"
+    },
+    {
+      "code": 6003,
+      "name": "ThresholdExceedsOwners",
+      "msg": "Threshold cannot exceed the number of owners"
+    },
+    {
+      "code": 6004,
+      "name": "NotAnOwner",
+      "msg": "Signer is not an owner of the multisig wallet"
+    },
+    {
+      "code": 6005,
+      "name": "InsufficientBalance",
+      "msg": "Insufficient balance in the multisig wallet"
+    },
+    {
+      "code": 6006,
+      "name": "OwnerAlreadyExists",
+      "msg": "Owner already exists in the multisig wallet"
+    },
+    {
+      "code": 6007,
+      "name": "TransactionAlreadyExecuted",
+      "msg": "Transaction already executed"
+    },
+    {
+      "code": 6008,
+      "name": "AlreadyApproved",
+      "msg": "Signer has already approved this transaction"
+    },
+    {
+      "code": 6009,
+      "name": "TransactionNotFound",
+      "msg": "Transaction not found"
+    },
+    {
+      "code": 6010,
+      "name": "ThresholdNotMet",
+      "msg": "Threshold not met for execution"
+    }
+  ],
+  "types": [
+    {
+      "name": "MultisigWallet",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "owners",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "threshold",
+            "type": "u8"
+          },
+          {
+            "name": "transaction_count",
+            "type": "u64"
+          },
+          {
+            "name": "pending_transactions",
+            "type": {
+              "vec": {
+                "defined": {
+                  "name": "Transaction"
+                }
+              }
+            }
+          },
+          {
+            "name": "balance",
+            "type": "u64"
+          }
+        ]
+      }
+    },
+    {
+      "name": "Transaction",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "id",
+            "type": "u64"
+          },
+          {
+            "name": "to",
+            "type": "pubkey"
+          },
+          {
+            "name": "amount",
+            "type": "u64"
+          },
+          {
+            "name": "approvals",
+            "type": {
+              "vec": "pubkey"
+            }
+          },
+          {
+            "name": "executed",
+            "type": "bool"
+          }
+        ]
+      }
+    },
+    {
+      "name": "UserCategory",
+      "type": {
+        "kind": "enum",
+        "variants": [
+          {
+            "name": "Free"
+          },
+          {
+            "name": "Pro"
+          }
+        ]
+      }
+    }
+  ]
+}
