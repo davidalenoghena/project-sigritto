@@ -19,7 +19,7 @@ export function getSigrittoProgram(provider: AnchorProvider) {
 export function getSigrittoProgramId(cluster: Cluster) {
   switch (cluster) {
     case 'devnet':
-      return new PublicKey('5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp');
+          return new PublicKey('FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks');
     case 'testnet':
     case 'mainnet-beta':
     default:

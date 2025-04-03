@@ -3,11 +3,14 @@
     "",
     "\\sigritto",
     "\\sigritto\\frontend",
-    "\\sigritto\\frontend\\src",
-    "\\sigritto\\frontend\\src\\components",
-    "\\sigritto\\frontend\\src\\components\\sigritto_data",
-    "\\sigritto\\frontend\\src\\components\\solana"
+    "\\sigritto\\frontend\\idltypes",
+    "\\sigritto\\frontend\\idltypes\\idl",
+    "\\sigritto\\frontend\\idltypes\\types",
+    "\\sigritto\\programs",
+    "\\sigritto\\programs\\sigritto",
+    "\\sigritto\\programs\\sigritto\\src",
+    "\\sigritto\\tests"
   ],
-  "SelectedNode": "\\sigritto\\frontend\\src\\components\\sigritto_data\\sigritto-data-access.tsx",
+  "SelectedNode": "\\sigritto\\programs\\sigritto\\src\\lib.rs",
   "PreviewInSolutionExplorer": false
 }

@@ -1,9 +1,9 @@
 'use client';
 
 import { getSigrittoProgram, getSigrittoProgramId, UserCategory } from './sigritto-exports';
-import { Program } from '@coral-xyz/anchor';
+import { Program, AnchorProvider } from '@coral-xyz/anchor';
 import { useConnection } from '@solana/wallet-adapter-react';
-import { Cluster, Keypair, PublicKey } from '@solana/web3.js';
+import { Cluster, Connection, PublicKey } from '@solana/web3.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
@@ -20,10 +20,13 @@ interface InitializeArgs {
     category: UserCategory; // Simplified enum representation
 }
 export function useSigrittoProgram() {
-  const { connection } = useConnection();
+  const connection = new Connection("https://api.testnet.sonic.game", "confirmed");
+
   const { cluster } = useCluster();
   const transactionToast = useTransactionToast();
+
   const provider = useAnchorProvider();
+
   const programId = useMemo(
     () => getSigrittoProgramId(cluster.network as Cluster),
     [cluster]
@@ -45,6 +48,23 @@ export function useSigrittoProgram() {
     const getProgramAccount = useQuery({
         queryKey: ['get-program-account', { cluster }],
         queryFn: () => connection.getParsedAccountInfo(programId),
+    });
+
+    // Query to fetch wallet balance using the program method
+    const getWalletBalance = useQuery({
+        queryKey: ['walletBalance', { cluster, multisigPda }],
+        queryFn: async () => {
+            try {
+                const balance = await program.methods.getWalletBalance()
+                    .accounts({ multisig: multisigPda })
+                    .view();
+                return balance as number;
+            } catch (error) {
+                console.error("Error fetching wallet balance:", error);
+                throw new Error("Failed to fetch wallet balance");
+            }
+        },
+        enabled: !!program, // Only fetch when program is available
     });
 
     // Update the initialization mutation in sigritto-data-access.tsx
@@ -99,6 +119,7 @@ export function useSigrittoProgram() {
     programId,
     multisigAccount,
     getProgramAccount,
+    getWalletBalance,
     initialize,
   };
 }

@@ -2,7 +2,7 @@ use anchor_lang::prelude::*;
 //use anchor_lang::solana_program::pubkey::Pubkey;
 use anchor_lang::solana_program::{pubkey::Pubkey, system_instruction};
 
-declare_id!("5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"); // Replace with your actual program ID
+declare_id!("FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks"); // Replace with your actual program ID
 
 #[program]
 pub mod multisig_wallet {
@@ -37,7 +37,7 @@ pub mod multisig_wallet {
         multisig.threshold = threshold;
         multisig.transaction_count = 0;
         multisig.pending_transactions = Vec::new(); // Using Vec instead of HashMap for simplicity
-        multisig.balance = 1000000;
+        multisig.balance = 0;
 
         Ok(())
     }
@@ -307,3 +307,7 @@ fn get_max_owners(category: &UserCategory) -> u8 {
         UserCategory::Pro => 10,  // Max owners for Pro users
     }
 }
+
+//Program Id: FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks
+
+//Signature: CNo2f2LVBXMkJ8kZ8WrYbBNZ8pyqNioKGYHggFXbmuHdWbRgKGkf957hvM5bLUboo5CeKWHvHNvZLAuTaJbVs3p

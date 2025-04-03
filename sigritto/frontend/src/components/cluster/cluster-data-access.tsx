@@ -26,13 +26,13 @@ export enum ClusterNetwork {
 export const defaultClusters: Cluster[] = [
   {
     name: 'devnet',
-    endpoint: clusterApiUrl('devnet'),
+    endpoint: 'https://api.testnet.sonic.game/',
     network: ClusterNetwork.Devnet,
   },
   { name: 'local', endpoint: 'http://localhost:8899' },
   {
     name: 'testnet',
-    endpoint: clusterApiUrl('testnet'),
+    endpoint: 'https://api.testnet.sonic.game/',
     network: ClusterNetwork.Testnet,
   },
 ];
@@ -96,7 +96,7 @@ export function ClusterProvider({ children }: { children: ReactNode }) {
     },
     setCluster: (cluster: Cluster) => setCluster(cluster),
     getExplorerUrl: (path: string) =>
-      `https://explorer.solana.com/${path}${getClusterUrlParam(cluster)}`,
+      `https://sonic-explorer.com/${path}${getClusterUrlParam(cluster)}`
   };
   return <Context.Provider value={value}>{children}</Context.Provider>;
 }

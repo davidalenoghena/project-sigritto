@@ -6,10 +6,13 @@ resolution = true
 skip-lint = false
 
 [programs.localnet]
-sigritto = "5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"
+sigritto = "FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks"
 
 [programs.testnet]
-sigritto = "5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"
+sigritto = "FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks"
+
+[programs.devnet]
+sigritto = "FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks"
 
 [registry]
 url = "https://api.apr.dev"

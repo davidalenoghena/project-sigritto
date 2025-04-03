@@ -46,7 +46,8 @@ const connectButtonStyles: React.CSSProperties = {
 
 export const SolanaProvider = ({ children }: WalletProviderProps) => {
     const { cluster } = useCluster();
-    const endpoint = useMemo(() => cluster.endpoint, [cluster]);
+    //const endpoint = useMemo(() => cluster.endpoint, [cluster]);
+    const endpoint = "https://api.testnet.sonic.game"
 
     const wallets = useMemo(
         () => [

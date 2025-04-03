@@ -5,7 +5,7 @@
  * IDL can be found at `target/idl/multisig_wallet.json`.
  */
 export type MultisigWallet = {
-  "address": "5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp",
+  "address": "FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks",
   "metadata": {
     "name": "multisigWallet",
     "version": "0.1.0",

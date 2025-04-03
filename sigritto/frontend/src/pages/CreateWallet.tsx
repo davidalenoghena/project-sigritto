@@ -23,7 +23,7 @@ import { UserCategory } from '../components/sigritto_data/sigritto-exports';
 
 
 export default function CreateWallet() {
-    const { initialize } = useSigrittoProgram();
+    const { initialize, getWalletBalance } = useSigrittoProgram();
     const { publicKey } = useWallet();
     const navigate = useNavigate()
 
@@ -236,6 +236,33 @@ export default function CreateWallet() {
                                     >
                                         {isSubmitting ? "Creating..." : "Create Multisig Wallet"}
                                     </Button>
+                                    <div className="mt-6 pt-6 border-t border-gray-800">
+                                        <div className="space-y-4">
+                                            <Label className="text-white flex items-center">
+                                                Wallet Balance
+                                            </Label>
+                                            <Button
+                                                type="button"
+                                                onClick={() => getWalletBalance.refetch()}
+                                                disabled={getWalletBalance.isFetching}
+                                                className="w-full bg-blue-600 hover:bg-blue-700"
+                                            >
+                                                {getWalletBalance.isFetching ? "Refreshing..." : "Check Balance"}
+                                            </Button>
+
+                                            {getWalletBalance.isError && (
+                                                <p className="text-red-400 text-sm">
+                                                    Error: {getWalletBalance.error.message}
+                                                </p>
+                                            )}
+
+                                            {getWalletBalance.data !== undefined && (
+                                                <div className="text-green-400 text-lg font-medium">
+                                                    Balance: {(getWalletBalance.data / 1e9).toFixed(4)} SOL
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
                                 </form>
                             </CardContent>
                         </Card>
