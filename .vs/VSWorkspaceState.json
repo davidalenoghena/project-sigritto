@@ -4,13 +4,14 @@
     "\\sigritto",
     "\\sigritto\\frontend",
     "\\sigritto\\frontend\\idltypes",
-    "\\sigritto\\frontend\\idltypes\\idl",
     "\\sigritto\\frontend\\idltypes\\types",
+    "\\sigritto\\frontend\\src",
+    "\\sigritto\\frontend\\src\\pages",
     "\\sigritto\\programs",
     "\\sigritto\\programs\\sigritto",
     "\\sigritto\\programs\\sigritto\\src",
     "\\sigritto\\tests"
   ],
-  "SelectedNode": "\\sigritto\\programs\\sigritto\\src\\lib.rs",
+  "SelectedNode": "\\sigritto\\frontend\\src\\pages\\CreateWallet.tsx",
   "PreviewInSolutionExplorer": false
 }
