@@ -8,133 +8,214 @@ import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
 import { useCluster } from '../cluster/cluster-data-access';
-//import { useAnchorProvider } from '../solana/solana-provider';
 import { useTransactionToast } from '../ui/ui-layout';
+import { useAnchorProvider } from '@/components/walletConnect';
+import BN from 'bn.js';
 
-import { useAnchorProvider } from '@/components/walletConnect'
-
-// Define argument interfaces for mutations
+// Enhanced argument interfaces
 interface InitializeArgs {
-    owners: string[]; // Array of owner public key strings
-    threshold: number; // u8 in Rust, but number in JS
-    category: UserCategory; // Simplified enum representation
+    owners: string[];
+    threshold: number;
+    category: UserCategory;
+    nonce: number;
 }
+
+interface TransactionArgs {
+    creator: PublicKey;
+    nonce: number;
+}
+
+interface WithdrawalArgs extends TransactionArgs {
+    amount: number;
+}
+
+interface ApprovalArgs extends TransactionArgs {
+    transactionId: number;
+}
+
+interface ExecuteArgs extends TransactionArgs {
+    transactionId: number;
+    recipient: PublicKey;
+}
+
 export function useSigrittoProgram() {
-  const connection = new Connection("https://api.testnet.sonic.game", "confirmed");
+    const connection = new Connection("https://api.testnet.sonic.game", "confirmed");
+    const { cluster } = useCluster();
+    const transactionToast = useTransactionToast();
+    const provider = useAnchorProvider();
 
-  const { cluster } = useCluster();
-  const transactionToast = useTransactionToast();
+    const programId = useMemo(
+        () => getSigrittoProgramId(cluster.network as Cluster),
+        [cluster]
+    );
+    const program = getSigrittoProgram(provider);
 
-  const provider = useAnchorProvider();
+    // Helper to compute PDA
+    const getMultisigPDA = (creator: PublicKey, nonce: number) => {
+        return PublicKey.findProgramAddressSync(
+            [
+                Buffer.from('multisig'),
+                creator.toBuffer(),
+                Buffer.from([nonce])
+            ],
+            programId
+        )[0];
+    };
 
-  const programId = useMemo(
-    () => getSigrittoProgramId(cluster.network as Cluster),
-    [cluster]
-  );
-  const program = getSigrittoProgram(provider);
+    // Generic multisig account fetcher
+    const fetchMultisigAccount = async (creator: PublicKey, nonce: number) => {
+        const multisigPDA = getMultisigPDA(creator, nonce);
+        return program.account.multisigWallet.fetch(multisigPDA);
+    };
 
-    const multisigPda = PublicKey.findProgramAddressSync(
-        [Buffer.from('multisig')],
-        programId
-    )[0];
-
-    // Fetch the multisig wallet account
-    const multisigAccount = useQuery({
-        queryKey: ['multisigwallet', 'fetch', { cluster, multisigPda }],
-        queryFn: () => program.account.multisigWallet.fetch(multisigPda),
-    });
-
-    // Fetch the program account info
-    const getProgramAccount = useQuery({
-        queryKey: ['get-program-account', { cluster }],
-        queryFn: () => connection.getParsedAccountInfo(programId),
-    });
-
-    // Query to fetch wallet balance using the program method
-    const getWalletBalance = useQuery({
-        queryKey: ['walletBalance', { cluster, multisigPda }],
-        queryFn: async () => {
-            try {
-                const balance = await program.methods.getWalletBalance()
-                    .accounts({ multisig: multisigPda })
-                    .view();
-                return balance as number;
-            } catch (error) {
-                console.error("Error fetching wallet balance:", error);
-                throw new Error("Failed to fetch wallet balance");
-            }
-        },
-        enabled: !!program, // Only fetch when program is available
-    });
-
-    // Update the initialization mutation in sigritto-data-access.tsx
+    // Initialize Multisig Wallet
     const initialize = useMutation<string, Error, InitializeArgs>({
         mutationKey: ["multisig-wallet", "initialize", { cluster }],
-        mutationFn: async ({ owners, threshold, category }) => {
+        mutationFn: async ({ owners, threshold, category, nonce }) => {
             try {
-                const ownerPubkeys = owners.map((owner) => {
-                    try {
-                        return new PublicKey(owner.trim()) // Add trim() and validation
-                    } catch (error) {
-                        throw new Error(`Invalid Solana address: ${owner}. 
-                    Ensure it's a base58 string without special characters (0, O, I, l are invalid)`)
-                    }
-                })
+                const ownerPubkeys = owners.map(owner => new PublicKey(owner.trim()));
+                const uniqueKeys = new Set(ownerPubkeys.map(pk => pk.toBase58()));
 
-                // Check for duplicates after validation
-                const uniqueKeys = new Set(ownerPubkeys.map(pk => pk.toBase58()))
                 if (uniqueKeys.size !== ownerPubkeys.length) {
-                    throw new Error("Duplicate owner addresses detected")
+                    throw new Error("Duplicate owner addresses detected");
                 }
 
                 const categoryEnum = category === UserCategory.Free
                     ? { free: {} }
-                    : { pro: {} }
+                    : { pro: {} };
 
-                return program.methods
-                    .initializeMultisigWallet(ownerPubkeys, threshold, categoryEnum)
+                const multisigPDA = getMultisigPDA(provider.wallet.publicKey, nonce);
+
+                return await program.methods
+                    .initializeMultisigWallet(nonce, ownerPubkeys, threshold, categoryEnum)
                     .accounts({
-                        signer: provider.wallet.publicKey,
+                        multisig: multisigPDA,
+                        creator: provider.wallet.publicKey
                     })
-                    .rpc()
-            } catch (error) {
-                if (error instanceof Error) {
-                    throw new Error(`Initialization failed: ${error.message}`)
-                }
-                throw error
+                    .rpc();
+            } catch (error: any) {
+                throw new Error(`Initialization failed: ${error.message}`);
             }
         },
         onSuccess: (signature) => {
-            transactionToast(signature)
-            multisigAccount.refetch()
+            transactionToast(signature);
         },
         onError: (error) => {
-            console.error("Detailed error:", error)
-            toast.error(`Multisig creation failed: ${error.message}`)
+            toast.error(`Multisig creation failed: ${error.message}`);
         }
     });
 
-  return {
-    program,
-    programId,
-    multisigAccount,
-    getProgramAccount,
-    getWalletBalance,
-    initialize,
-  };
-}
+    // Request Withdrawal
+    const requestWithdrawal = useMutation<string, Error, WithdrawalArgs>({
+        mutationKey: ["multisig-wallet", "request-withdrawal", { cluster }],
+        mutationFn: async ({ creator, nonce, amount }) => {
+            try {
+                const multisigPDA = getMultisigPDA(creator, nonce);
 
-export function useSigrittoProgramAccount({ account }: { account: PublicKey }) {
-  const { cluster } = useCluster();
-  const transactionToast = useTransactionToast();
-  const { program, multisigAccount } = useSigrittoProgram();
+                return await program.methods
+                    .requestWithdrawal(new BN(amount))
+                    .accounts({
+                        multisig: multisigPDA,
+                        signer: provider.wallet.publicKey
+                    })
+                    .rpc();
+            } catch (error: any) {
+                throw new Error(`Withdrawal request failed: ${error.message}`);
+            }
+        },
+        onSuccess: (signature) => transactionToast(signature),
+        onError: (error) => toast.error(error.message)
+    });
 
-  const accountQuery = useQuery({
-    queryKey: ['multisig_wallet', 'fetch', { cluster, account }],
-    queryFn: () => program.account.multisigWallet.fetch(account),
-  });
+    // Approve Request
+    const approveRequest = useMutation<string, Error, ApprovalArgs>({
+        mutationKey: ["multisig-wallet", "approve-request", { cluster }],
+        mutationFn: async ({ creator, nonce, transactionId }) => {
+            try {
+                const multisigPDA = getMultisigPDA(creator, nonce);
 
-  return {
-    accountQuery,
-  };
+                return await program.methods
+                    .approveRequest(new BN(transactionId))
+                    .accounts({
+                        multisig: multisigPDA,
+                        signer: provider.wallet.publicKey
+                    })
+                    .rpc();
+            } catch (error: any) {
+                throw new Error(`Approval failed: ${error.message}`);
+            }
+        },
+        onSuccess: (signature) => transactionToast(signature),
+        onError: (error) => toast.error(error.message)
+    });
+
+    // Execute Request
+    const executeRequest = useMutation<string, Error, ExecuteArgs>({
+        mutationKey: ["multisig-wallet", "execute-request", { cluster }],
+        mutationFn: async ({ creator, nonce, transactionId, recipient }) => {
+            try {
+                const multisigPDA = getMultisigPDA(creator, nonce);
+
+                return await program.methods
+                    .executeRequest(new BN(transactionId))
+                    .accounts({
+                        multisig: multisigPDA,
+                        recipient: recipient,
+                        signer: provider.wallet.publicKey,
+                    })
+                    .rpc();
+            } catch (error: any) {
+                throw new Error(`Execution failed: ${error.message}`);
+            }
+        },
+        onSuccess: (signature) => transactionToast(signature),
+        onError: (error) => toast.error(error.message)
+    });
+
+    // Query: Get Wallet Balance
+    const getWalletBalance = (creator: PublicKey, nonce: number) => useQuery<number, Error>({
+        queryKey: ['walletBalance', { cluster, creator, nonce }],
+        queryFn: async () => {
+            const multisigPDA = getMultisigPDA(creator, nonce);
+            return program.methods.getWalletBalance()
+                .accounts({ multisig: multisigPDA })
+                .view() as Promise<number>;
+        },
+        enabled: !!program && !!creator
+    });
+
+    // Query: Get Pending Transactions
+    const getPendingTransactions = (creator: PublicKey, nonce: number) => useQuery<any[], Error>({
+        queryKey: ['pendingTransactions', { cluster, creator, nonce }],
+        queryFn: async () => {
+            const multisigPDA = getMultisigPDA(creator, nonce);
+            const account = await program.account.multisigWallet.fetch(multisigPDA);
+            return account.pendingTransactions;
+        },
+        enabled: !!program && !!creator
+    });
+
+    // Query: Get Owners
+    const getOwners = (creator: PublicKey, nonce: number) => useQuery<PublicKey[], Error>({
+        queryKey: ['multisigOwners', { cluster, creator, nonce }],
+        queryFn: async () => {
+            const multisigPDA = getMultisigPDA(creator, nonce);
+            const account = await program.account.multisigWallet.fetch(multisigPDA);
+            return account.owners;
+        },
+        enabled: !!program && !!creator
+    });
+
+    return {
+        program,
+        programId,
+        initialize,
+        requestWithdrawal,
+        approveRequest,
+        executeRequest,
+        getWalletBalance,
+        getPendingTransactions,
+        getOwners,
+        fetchMultisigAccount
+    };
 }

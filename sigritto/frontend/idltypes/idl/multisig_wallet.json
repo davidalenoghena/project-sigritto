@@ -58,24 +58,7 @@
       "accounts": [
         {
           "name": "multisig",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  117,
-                  108,
-                  116,
-                  105,
-                  115,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "recipient",
@@ -193,27 +176,10 @@
       "accounts": [
         {
           "name": "multisig",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  117,
-                  108,
-                  116,
-                  105,
-                  115,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
-          "name": "signer",
+          "name": "creator",
           "writable": true,
           "signer": true
         },
@@ -223,6 +189,10 @@
         }
       ],
       "args": [
+        {
+          "name": "nonce",
+          "type": "u8"
+        },
         {
           "name": "owners",
           "type": {
@@ -296,6 +266,21 @@
       ]
     }
   ],
+  "events": [
+    {
+      "name": "WalletCreated",
+      "discriminator": [
+        159,
+        189,
+        177,
+        30,
+        192,
+        157,
+        229,
+        179
+      ]
+    }
+  ],
   "errors": [
     {
       "code": 6000,
@@ -351,6 +336,16 @@
       "code": 6010,
       "name": "ThresholdNotMet",
       "msg": "Threshold not met for execution"
+    },
+    {
+      "code": 6011,
+      "name": "RecipientMismatch",
+      "msg": "Recipient account does not match transaction record"
+    },
+    {
+      "code": 6012,
+      "name": "DuplicateOwners",
+      "msg": "Duplicate owners not allowed"
     }
   ],
   "types": [
@@ -359,6 +354,10 @@
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
           {
             "name": "owners",
             "type": {
@@ -384,8 +383,12 @@
             }
           },
           {
-            "name": "balance",
-            "type": "u64"
+            "name": "nonce",
+            "type": "u8"
+          },
+          {
+            "name": "created_at",
+            "type": "i64"
           }
         ]
       }
@@ -430,6 +433,26 @@
           },
           {
             "name": "Pro"
+          }
+        ]
+      }
+    },
+    {
+      "name": "WalletCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }

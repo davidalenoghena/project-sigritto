@@ -64,24 +64,7 @@ export type MultisigWallet = {
       "accounts": [
         {
           "name": "multisig",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  117,
-                  108,
-                  116,
-                  105,
-                  115,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
           "name": "recipient",
@@ -199,27 +182,10 @@ export type MultisigWallet = {
       "accounts": [
         {
           "name": "multisig",
-          "writable": true,
-          "pda": {
-            "seeds": [
-              {
-                "kind": "const",
-                "value": [
-                  109,
-                  117,
-                  108,
-                  116,
-                  105,
-                  115,
-                  105,
-                  103
-                ]
-              }
-            ]
-          }
+          "writable": true
         },
         {
-          "name": "signer",
+          "name": "creator",
           "writable": true,
           "signer": true
         },
@@ -229,6 +195,10 @@ export type MultisigWallet = {
         }
       ],
       "args": [
+        {
+          "name": "nonce",
+          "type": "u8"
+        },
         {
           "name": "owners",
           "type": {
@@ -302,6 +272,21 @@ export type MultisigWallet = {
       ]
     }
   ],
+  "events": [
+    {
+      "name": "walletCreated",
+      "discriminator": [
+        159,
+        189,
+        177,
+        30,
+        192,
+        157,
+        229,
+        179
+      ]
+    }
+  ],
   "errors": [
     {
       "code": 6000,
@@ -357,6 +342,16 @@ export type MultisigWallet = {
       "code": 6010,
       "name": "thresholdNotMet",
       "msg": "Threshold not met for execution"
+    },
+    {
+      "code": 6011,
+      "name": "recipientMismatch",
+      "msg": "Recipient account does not match transaction record"
+    },
+    {
+      "code": 6012,
+      "name": "duplicateOwners",
+      "msg": "Duplicate owners not allowed"
     }
   ],
   "types": [
@@ -365,6 +360,10 @@ export type MultisigWallet = {
       "type": {
         "kind": "struct",
         "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
           {
             "name": "owners",
             "type": {
@@ -390,8 +389,12 @@ export type MultisigWallet = {
             }
           },
           {
-            "name": "balance",
-            "type": "u64"
+            "name": "nonce",
+            "type": "u8"
+          },
+          {
+            "name": "createdAt",
+            "type": "i64"
           }
         ]
       }
@@ -436,6 +439,26 @@ export type MultisigWallet = {
           },
           {
             "name": "pro"
+          }
+        ]
+      }
+    },
+    {
+      "name": "walletCreated",
+      "type": {
+        "kind": "struct",
+        "fields": [
+          {
+            "name": "creator",
+            "type": "pubkey"
+          },
+          {
+            "name": "wallet",
+            "type": "pubkey"
+          },
+          {
+            "name": "timestamp",
+            "type": "i64"
           }
         ]
       }
