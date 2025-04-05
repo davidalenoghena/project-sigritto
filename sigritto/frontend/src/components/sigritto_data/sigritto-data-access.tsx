@@ -26,7 +26,7 @@ interface TransactionArgs {
 }
 
 interface WithdrawalArgs extends TransactionArgs {
-    amount: number;
+    amount: BN;
 }
 
 interface ApprovalArgs extends TransactionArgs {

@@ -12,15 +12,15 @@ import { Plus, Trash2, ArrowLeft, Users } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import toast from 'react-hot-toast';
 
 import {
     useSigrittoProgram,
-    useSigrittoProgramAccount,
 } from "../components/sigritto_data/sigritto-data-access";
 
 import { useWallet } from "@solana/wallet-adapter-react";
 import { UserCategory } from '../components/sigritto_data/sigritto-exports';
-
+import { PublicKey } from "@solana/web3.js"
 
 export default function CreateWallet() {
     const { initialize, getWalletBalance } = useSigrittoProgram();
@@ -35,6 +35,7 @@ export default function CreateWallet() {
     ])
     const [threshold, setThreshold] = useState(2)
     const [category, setCategory] = useState<UserCategory>(UserCategory.Free)
+    const [nonce, setNonce] = useState<number>(0)
     const [isSubmitting, setIsSubmitting] = useState(false)
 
     if (!publicKey) {
@@ -67,20 +68,42 @@ export default function CreateWallet() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        // Validate nonce range
+        if (nonce < 0 || nonce > 255) {
+            toast.error("Nonce must be between 0 and 255")
+            return
+        }
+
         setIsSubmitting(true)
 
         try {
-            const ownerAddresses = owners.map(owner => owner.address)
+            const ownerAddresses = owners.map(owner => {
+                try {
+                    return new PublicKey(owner.address).toString()
+                } catch {
+                    throw new Error(`Invalid address: ${owner.address}`)
+                }
+            })
 
-            await initialize.mutateAsync({
+            const txSignature = await initialize.mutateAsync({
                 owners: ownerAddresses,
                 threshold,
                 category,
+                nonce,
+            })
+
+            // Success logging
+            console.log('Wallet created successfully!', {
+                transaction: txSignature,
+                owners: ownerAddresses,
+                threshold,
+                category
             })
 
             navigate("/dashboard")
-        } catch (error) {
-            console.error("Error creating wallet:", error)
+        } catch (error: any) {
+            toast.error(`Creation failed: ${error.message}`)
         } finally {
             setIsSubmitting(false)
         }
@@ -210,6 +233,24 @@ export default function CreateWallet() {
                                             {threshold} signatures will be required to approve transactions
                                         </p>
                                     </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="nonce" className="text-white">
+                                            Wallet Nonce
+                                        </Label>
+                                        <Input
+                                            id="nonce"
+                                            type="number"
+                                            min="0"
+                                            max="255"
+                                            value={nonce}
+                                            onChange={(e) => setNonce(Math.min(255, Math.max(0, parseInt(e.target.value)) || 0))}
+                                            required
+                                            className="bg-gray-800/50 border-gray-700"
+                                        />
+                                        <p className="text-sm text-gray-400">
+                                            Unique identifier (0-255) for this wallet version
+                                        </p>
+                                    </div>
 
                                     <div className="space-y-2">
                                         <Label htmlFor="category" className="text-white">
@@ -236,33 +277,6 @@ export default function CreateWallet() {
                                     >
                                         {isSubmitting ? "Creating..." : "Create Multisig Wallet"}
                                     </Button>
-                                    <div className="mt-6 pt-6 border-t border-gray-800">
-                                        <div className="space-y-4">
-                                            <Label className="text-white flex items-center">
-                                                Wallet Balance
-                                            </Label>
-                                            <Button
-                                                type="button"
-                                                onClick={() => getWalletBalance.refetch()}
-                                                disabled={getWalletBalance.isFetching}
-                                                className="w-full bg-blue-600 hover:bg-blue-700"
-                                            >
-                                                {getWalletBalance.isFetching ? "Refreshing..." : "Check Balance"}
-                                            </Button>
-
-                                            {getWalletBalance.isError && (
-                                                <p className="text-red-400 text-sm">
-                                                    Error: {getWalletBalance.error.message}
-                                                </p>
-                                            )}
-
-                                            {getWalletBalance.data !== undefined && (
-                                                <div className="text-green-400 text-lg font-medium">
-                                                    Balance: {(getWalletBalance.data / 1e9).toFixed(4)} SOL
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
                                 </form>
                             </CardContent>
                         </Card>
