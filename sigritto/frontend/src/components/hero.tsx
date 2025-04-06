@@ -52,6 +52,7 @@ export default function Hero() {
                     Create Now
               </Button>
             </Link>
+            <Link to={`/dashboard`}>
               <Button
                     size="lg"
                     variant="outline"
@@ -59,8 +60,9 @@ export default function Hero() {
                     style={{ borderRadius: '0.375rem' }}
                 >
                     <Sparkles className="mr-2 h-5 w-5" />
-                    Talk to Fabian
-              </Button>
+                    Dashboard
+                          </Button>
+            </Link>
           </motion.div>
         </div>
       </div>

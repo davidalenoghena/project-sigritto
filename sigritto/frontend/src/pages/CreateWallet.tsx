@@ -23,7 +23,7 @@ import { UserCategory } from '../components/sigritto_data/sigritto-exports';
 import { PublicKey } from "@solana/web3.js"
 
 export default function CreateWallet() {
-    const { initialize, getWalletBalance } = useSigrittoProgram();
+    const { initialize } = useSigrittoProgram();
     const { publicKey } = useWallet();
     const navigate = useNavigate()
 
@@ -100,6 +100,10 @@ export default function CreateWallet() {
                 threshold,
                 category
             })
+            toast.success(
+                `Multisig created!`,
+                { duration: 5000 }
+            )
 
             navigate("/dashboard")
         } catch (error: any) {
