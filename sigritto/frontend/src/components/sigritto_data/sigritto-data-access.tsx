@@ -1,9 +1,9 @@
 'use client';
 
 import { getSigrittoProgram, getSigrittoProgramId, UserCategory } from './sigritto-exports';
-import { Program, AnchorProvider } from '@coral-xyz/anchor';
-import { useConnection } from '@solana/wallet-adapter-react';
-import { Cluster, Connection, PublicKey } from '@solana/web3.js';
+//import { Program, AnchorProvider } from '@coral-xyz/anchor';
+//import { useConnection } from '@solana/wallet-adapter-react';
+import { Cluster, PublicKey } from '@solana/web3.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
 import toast from 'react-hot-toast';
@@ -39,7 +39,7 @@ interface ExecuteArgs extends TransactionArgs {
 }
 
 export function useSigrittoProgram() {
-    const connection = new Connection("https://api.testnet.sonic.game", "confirmed");
+    //const connection = new Connection("https://api.testnet.sonic.game", "confirmed");
     const { cluster } = useCluster();
     const transactionToast = useTransactionToast();
     const provider = useAnchorProvider();

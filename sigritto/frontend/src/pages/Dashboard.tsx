@@ -39,12 +39,12 @@ export default function Dashboard() {
             )
 
             // 2. Check existence efficiently
-            const existenceChecks = await connection.getMultipleAccountsInfo(potentialWallets)
+            //const existenceChecks = await connection.getMultipleAccountsInfo(potentialWallets)
 
             // 3. Filter valid wallets
-            const validWallets = potentialWallets.filter((wallet, index) =>
-                existenceChecks[index]?.data !== undefined
-            )
+            //const validWallets = potentialWallets.filter((wallet, index) =>
+            //    existenceChecks[index]?.data !== undefined
+            //)
 
             // 4. Parallel fetch details
             const walletDetails = await Promise.all(

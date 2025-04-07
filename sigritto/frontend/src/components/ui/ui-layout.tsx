@@ -3,7 +3,6 @@ import { CustomWalletMultiButton } from "@/components/walletConnect";
 import { ReactNode, Suspense, useEffect, useRef } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import {
-    ClusterChecker,
     ClusterUiSelect,
     ExplorerLink,
 } from '../cluster/cluster-ui';
