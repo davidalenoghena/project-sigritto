@@ -6,6 +6,8 @@ import { useState } from "react"
 import { Link } from "react-router-dom"
 import { Menu, X } from "lucide-react"
 import { motion, AnimatePresence } from "framer-motion"
+
+//import { useWallet } from '@solana/wallet-adapter-react'
 import { CustomWalletMultiButton } from "@/components/walletConnect";
 
 const navItems = [
@@ -52,7 +54,7 @@ export default function Navbar() {
           </div>
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
-               <CustomWalletMultiButton />
+                          <CustomWalletMultiButton />
             </div>
           </div>
           <div className="md:hidden flex items-center">

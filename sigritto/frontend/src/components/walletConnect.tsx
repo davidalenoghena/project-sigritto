@@ -1,85 +1,82 @@
 import * as React from "react";
-import { createContext, useContext, useMemo, ReactNode } from "react";
+import { useMemo, ReactNode } from "react";
 import {
-  ConnectionProvider,
-  WalletProvider,
-  useWallet as useSolanaWallet,
+    AnchorWallet,
+    useConnection,
+    ConnectionProvider,
+    WalletProvider,
+    useWallet as useSolanaWallet,
 } from "@solana/wallet-adapter-react";
-import { WalletAdapterNetwork } from "@solana/wallet-adapter-base";
-import { PhantomWalletAdapter } from "@solana/wallet-adapter-wallets";
 import {
-  WalletModalProvider,
-  WalletMultiButton,
+    PhantomWalletAdapter,
+    SolflareWalletAdapter,
+} from "@solana/wallet-adapter-wallets";
+import { BackpackWalletAdapter } from '@solana/wallet-adapter-backpack';
+import {
+    WalletModalProvider,
+    WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
-import { clusterApiUrl } from "@solana/web3.js";
+import { AnchorProvider } from "@coral-xyz/anchor";
+import { useCluster } from "@/components/cluster/cluster-data-access";
 import "@solana/wallet-adapter-react-ui/styles.css";
-import { WalletContextState } from "@solana/wallet-adapter-react";
 
-// Define the props type for the provider
-interface WalletContextProviderProps {
-  children: ReactNode;
+interface WalletProviderProps {
+    children: ReactNode;
 }
 
-// Create the context with the correct type
-const WalletContext = createContext<WalletContextState | null>(null);
-
 export const CustomWalletMultiButton = () => {
-  const wallet = useSolanaWallet();
-
-  // Conditionally render button text based on connection state
-  const buttonText = wallet.connected ? null : "Connect Wallet";
-
-  return (
-      <WalletMultiButton
-          style={connectButtonStyles}
-          className="hover:bg-purple-700"
-      >
-          {buttonText}
-      </WalletMultiButton>
-  );
+    return (
+        <WalletMultiButton
+            style={connectButtonStyles}
+            className="hover:bg-purple-700"
+        />
+    );
 };
 
-// Button styles
 const connectButtonStyles: React.CSSProperties = {
-    backgroundColor: "#6B21A8", // Tailwind 'purple-600' color
+    backgroundColor: "#6B21A8",
     color: "#fff",
     padding: "0.5rem 1rem",
     border: "none",
-    borderRadius: "0.375rem", // Tailwind 'rounded-md'
-    fontSize: "1rem", // Tailwind 'text-base'
+    borderRadius: "0.375rem",
+    fontSize: "1rem",
     cursor: "pointer",
     transition: "background-color 0.3s ease",
 };
 
-const WalletContextProvider: React.FC<WalletContextProviderProps> = ({
-  children,
-}) => {
-  const network = WalletAdapterNetwork.Devnet;
-  const endpoint = useMemo(() => clusterApiUrl(network), [network]);
+export const SolanaProvider = ({ children }: WalletProviderProps) => {
+    const { cluster } = useCluster();
+    //const endpoint = useMemo(() => cluster.endpoint, [cluster]);
+    const endpoint = "https://api.testnet.sonic.game"
 
-  const wallets = useMemo(() => [new PhantomWalletAdapter()], [network]);
+    const wallets = useMemo(
+        () => [
+            new PhantomWalletAdapter(),
+            new SolflareWalletAdapter(),
+            new BackpackWalletAdapter()
+            // Add more wallets as needed
+        ],
+        [cluster.network] // Update wallets when network changes
+    );
 
-  const wallet = useSolanaWallet();
-
-  return (
-    <ConnectionProvider endpoint={endpoint}>
-      <WalletProvider wallets={wallets} autoConnect>
-        <WalletModalProvider>
-          <WalletContext.Provider value={wallet}>
-            {children}
-          </WalletContext.Provider>
-        </WalletModalProvider>
-      </WalletProvider>
-    </ConnectionProvider>
-  );
+    return (
+        <ConnectionProvider endpoint={endpoint}>
+            <WalletProvider wallets={wallets} autoConnect>
+                <WalletModalProvider>{children}</WalletModalProvider>
+            </WalletProvider>
+        </ConnectionProvider>
+    );
 };
 
-export const useWallet = () => {
-  const context = useContext(WalletContext);
-  if (context === null) {
-    throw new Error("useWallet must be used within a WalletContextProvider");
-  }
-  return context;
-};
+export function useAnchorProvider() {
+    const { connection } = useConnection();
+    const wallet = useSolanaWallet();
 
-export default WalletContextProvider;
+    if (!wallet.publicKey || !wallet.signTransaction) {
+        throw new Error("Wallet not connected!");
+    }
+
+    return new AnchorProvider(connection, wallet as AnchorWallet, {
+        commitment: "confirmed",
+    });
+}

@@ -1,8 +1,7 @@
 use anchor_lang::prelude::*;
-//use anchor_lang::solana_program::pubkey::Pubkey;
 use anchor_lang::solana_program::{pubkey::Pubkey, system_instruction};
 
-declare_id!("5jAp6TAEegjtconAwrAu4T62FS4yyg4CwykuFhdJv3Dp"); // Replace with your actual program ID
+declare_id!("FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks"); // Replace with your actual program ID
 
 #[program]
 pub mod multisig_wallet {
@@ -11,17 +10,23 @@ pub mod multisig_wallet {
     /// Initialize the multisig wallet
     pub fn initialize_multisig_wallet(
         ctx: Context<InitializeMultisig>,
+        nonce: u8,
         owners: Vec<Pubkey>,
         threshold: u8,
         category: UserCategory,
     ) -> Result<()> {
         let multisig = &mut ctx.accounts.multisig;
+        let creator = &ctx.accounts.creator;
 
         let max_owners = get_max_owners(&category);
 
         // Validate number of owners
         if owners.len() > max_owners as usize {
             return err!(MultisigError::TooManyOwners);
+        }
+        // Chedk for same address in owners
+        if has_duplicates(&owners) {
+            return err!(MultisigError::DuplicateOwners);
         }
 
         // Validate threshold
@@ -33,11 +38,19 @@ pub mod multisig_wallet {
         }
 
         // Initialize the multisig wallet state
+        multisig.creator = creator.key();
         multisig.owners = owners;
         multisig.threshold = threshold;
         multisig.transaction_count = 0;
-        multisig.pending_transactions = Vec::new(); // Using Vec instead of HashMap for simplicity
-        multisig.balance = 1000000;
+        multisig.pending_transactions = Vec::new();
+        multisig.nonce = nonce;
+        multisig.created_at = Clock::get()?.unix_timestamp;
+
+        emit!(WalletCreated {
+            creator: creator.key(),
+            wallet: multisig.key(),
+            timestamp: Clock::get()?.unix_timestamp
+        });
 
         Ok(())
     }
@@ -47,14 +60,15 @@ pub mod multisig_wallet {
         let multisig = &mut ctx.accounts.multisig;
         let requester = &ctx.accounts.signer;
 
+        let balance = multisig.to_account_info().lamports();
+        
+        if amount > balance {
+            return err!(MultisigError::InsufficientBalance);
+        }
+
         // Ensure the requester is an owner
         if !multisig.owners.contains(&requester.key()) {
             return err!(MultisigError::NotAnOwner);
-        }
-
-        // Check if there s enough balance
-        if amount > multisig.balance {
-            return err!(MultisigError::InsufficientBalance);
         }
 
         // Create a new transaction
@@ -102,35 +116,50 @@ pub mod multisig_wallet {
     /// Execute a pending withdrawal request once threshold is met
     pub fn execute_request(ctx: Context<ExecuteRequest>, transaction_id: u64) -> Result<()> {
     // Extract necessary data before mutable borrows
-    let threshold = ctx.accounts.multisig.threshold;
-    let balance = ctx.accounts.multisig.balance;
-    let multisig_key = ctx.accounts.multisig.key();
     let bump = ctx.bumps.multisig;
-
-    // Create mutable references after extracting data
     let multisig = &mut ctx.accounts.multisig;
+
     let transaction_index = multisig
         .pending_transactions
         .iter()
         .position(|t| t.id == transaction_id)
         .ok_or(MultisigError::TransactionNotFound)?;
-    
-    // Extract required data from transaction before mutation
-    let (to, amount) = {
-        let transaction = &multisig.pending_transactions[transaction_index];
-        (transaction.to, transaction.amount)
-    };
 
-    // Perform checks using pre-extracted values
-    require!(!multisig.pending_transactions[transaction_index].executed, MultisigError::TransactionAlreadyExecuted);
-    require!(multisig.pending_transactions[transaction_index].approvals.len() as u8 >= threshold, MultisigError::ThresholdNotMet);
-    require!(amount <= balance, MultisigError::InsufficientBalance);
+    let transaction = &multisig.pending_transactions[transaction_index];
+
+    require!(!transaction.executed, MultisigError::TransactionAlreadyExecuted);
+    require!(
+        transaction.approvals.len() as u8 >= multisig.threshold,
+        MultisigError::ThresholdNotMet
+    );
+    require!(
+        ctx.accounts.recipient.key() == transaction.to,
+        MultisigError::RecipientMismatch
+    );
+
+    // Use actual account balance instead of stored value
+    let balance = multisig.to_account_info().lamports();
+    require!(transaction.amount <= balance, MultisigError::InsufficientBalance);
+    
+    // Prepare PDA signature
+    let seeds = &[
+        b"multisig".as_ref(),
+        multisig.creator.as_ref(),
+        &[multisig.nonce],
+        &[bump],
+    ];
 
     // Perform the transfer using the extracted data
+    // let transfer_instruction = system_instruction::transfer(
+    //     &multisig_key,
+    //     &to,
+    //     amount,
+    // );
+
     let transfer_instruction = system_instruction::transfer(
-        &multisig_key,
-        &to,
-        amount,
+        &multisig.key(),
+        &transaction.to,
+        transaction.amount,
     );
     
     anchor_lang::solana_program::program::invoke_signed(
@@ -140,12 +169,10 @@ pub mod multisig_wallet {
             ctx.accounts.recipient.to_account_info(),
             ctx.accounts.system_program.to_account_info(),
         ],
-        &[&[b"multisig", &[bump]]],
+        &[seeds],
     )?;
 
     // Update state after transfer
-    multisig.balance -= amount;
-    multisig.pending_transactions[transaction_index].executed = true;
     multisig.pending_transactions.remove(transaction_index);
     
     Ok(())
@@ -154,7 +181,7 @@ pub mod multisig_wallet {
     /// Query the current balance of the multisig wallet (view function)
     pub fn get_wallet_balance(ctx: Context<GetWalletBalance>) -> Result<u64> {
         let multisig = &ctx.accounts.multisig;
-        Ok(multisig.balance)
+        Ok(multisig.to_account_info().lamports())
     }
 
     /// Retrieve a list of pending transactions (view function)
@@ -175,7 +202,11 @@ pub mod multisig_wallet {
 pub struct ExecuteRequest<'info> {
     #[account(
         mut,
-        seeds = [b"multisig"],
+        seeds = [
+            b"multisig", 
+            multisig.creator.as_ref(), 
+            &[multisig.nonce]
+        ],
         bump,
     )]
     pub multisig: Account<'info, MultisigWallet>,
@@ -188,19 +219,48 @@ pub struct ExecuteRequest<'info> {
     pub system_program: Program<'info, System>,
 }
 
+// Multisig wallet account data structure
+#[account]
+#[derive(Default)]
+pub struct MultisigWallet {
+    pub creator: Pubkey,          // Track creator
+    pub owners: Vec<Pubkey>,
+    pub threshold: u8,
+    pub transaction_count: u64,
+    pub pending_transactions: Vec<Transaction>,
+    pub nonce: u8,                // Unique per creator
+    pub created_at: i64,          // Creation timestamp
+}
+
+impl MultisigWallet {
+    // Initial size estimate for space allocation (adjust as needed)
+    pub const SIZE: usize = 32 +  // creator
+        4 + (32 * 10) +           // owners (max 10)
+        1 +                       // threshold
+        8 +                       // transaction_count
+        4 + (8 + 32 + 8 + 4 + 32 + 1) * 10 + // transactions
+        1 +                       // nonce
+        8;                        // created_at
+}
+
 // Accounts structure for initializing the multisig wallet
 #[derive(Accounts)]
+#[instruction(nonce: u8)]
 pub struct InitializeMultisig<'info> {
     #[account(
         init,
-        payer = signer,
-        space = 8 + MultisigWallet::INITIAL_SIZE,
-        seeds = [b"multisig"],
+        payer = creator,
+        space = 8 + MultisigWallet::SIZE,
+        seeds = [
+            b"multisig", 
+            creator.key().as_ref(), 
+            &[nonce]
+        ],
         bump
     )]
     pub multisig: Account<'info, MultisigWallet>,
     #[account(mut)]
-    pub signer: Signer<'info>,
+    pub creator: Signer<'info>,
     pub system_program: Program<'info, System>,
 }
 
@@ -234,26 +294,6 @@ pub struct GetPendingTransactions<'info> {
 #[derive(Accounts)]
 pub struct GetOwners<'info> {
     pub multisig: Account<'info, MultisigWallet>,
-}
-
-// Multisig wallet account data structure
-#[account]
-#[derive(Default)]
-pub struct MultisigWallet {
-    pub owners: Vec<Pubkey>, // List of owner public keys
-    pub threshold: u8,       // Minimum number of approvals required
-    pub transaction_count: u64, // Counter for transactions
-    pub pending_transactions: Vec<Transaction>, // List of pending transactions
-    pub balance: u64,        // Wallet balance in lamports
-}
-
-impl MultisigWallet {
-    // Initial size estimate for space allocation (adjust as needed)
-    const INITIAL_SIZE: usize = 32 * 10 + // owners (assuming max 10 owners for now)
-        1 +                              // threshold
-        8 +                              // transaction_count
-        4 + (8 + 32 + 8 + 4 + 32 + 1) * 10 + // pending_transactions (assuming max 10 txs)
-        8;                               // balance
 }
 
 // Transaction data structure
@@ -298,6 +338,18 @@ pub enum MultisigError {
     TransactionNotFound,
     #[msg("Threshold not met for execution")]
     ThresholdNotMet,
+    #[msg("Recipient account does not match transaction record")]
+    RecipientMismatch,
+    #[msg("Duplicate owners not allowed")]
+    DuplicateOwners,
+}
+
+// Event logging
+#[event]
+pub struct WalletCreated {
+    pub creator: Pubkey,
+    pub wallet: Pubkey,
+    pub timestamp: i64,
 }
 
 // Helper function to determine max owners based on category
@@ -306,4 +358,9 @@ fn get_max_owners(category: &UserCategory) -> u8 {
         UserCategory::Free => 3,  // Max owners for Free users
         UserCategory::Pro => 10,  // Max owners for Pro users
     }
+}
+
+fn has_duplicates(owners: &[Pubkey]) -> bool {
+    let mut seen = std::collections::HashSet::new();
+    owners.iter().any(|owner| !seen.insert(owner))
 }

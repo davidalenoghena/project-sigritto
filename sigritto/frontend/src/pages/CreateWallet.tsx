@@ -1,6 +1,6 @@
-"use client"
+﻿"use client"
 
-import type React from "react"
+import type React from "react";
 
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
@@ -12,16 +12,35 @@ import { Plus, Trash2, ArrowLeft, Users } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
+import toast from 'react-hot-toast';
+
+import {
+    useSigrittoProgram,
+} from "../components/sigritto_data/sigritto-data-access";
+
+import { useWallet } from "@solana/wallet-adapter-react";
+import { UserCategory } from '../components/sigritto_data/sigritto-exports';
+import { PublicKey } from "@solana/web3.js"
 
 export default function CreateWallet() {
+    const { initialize } = useSigrittoProgram();
+    const { publicKey } = useWallet();
     const navigate = useNavigate()
+
+    // Form states
     const [walletName, setWalletName] = useState("")
     const [owners, setOwners] = useState([
         { address: "", label: "" },
         { address: "", label: "" },
     ])
     const [threshold, setThreshold] = useState(2)
+    const [category, setCategory] = useState<UserCategory>(UserCategory.Free)
+    const [nonce, setNonce] = useState<number>(0)
     const [isSubmitting, setIsSubmitting] = useState(false)
+
+    if (!publicKey) {
+        return <div>Please connect your wallet first</div>;
+    }
 
     const addOwner = () => {
         if (owners.length < 5) {
@@ -35,7 +54,6 @@ export default function CreateWallet() {
             newOwners.splice(index, 1)
             setOwners(newOwners)
 
-            // Adjust threshold if needed
             if (threshold > newOwners.length) {
                 setThreshold(newOwners.length)
             }
@@ -50,23 +68,46 @@ export default function CreateWallet() {
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
+
+        // Validate nonce range
+        if (nonce < 0 || nonce > 255) {
+            toast.error("Nonce must be between 0 and 255")
+            return
+        }
+
         setIsSubmitting(true)
 
-        // Mock wallet creation - would call your Solana program in production
         try {
-            // Simulate API call
-            await new Promise((resolve) => setTimeout(resolve, 1500))
-
-            console.log({
-                name: walletName,
-                owners,
-                threshold,
+            const ownerAddresses = owners.map(owner => {
+                try {
+                    return new PublicKey(owner.address).toString()
+                } catch {
+                    throw new Error(`Invalid address: ${owner.address}`)
+                }
             })
 
-            // Redirect to dashboard on success
+            const txSignature = await initialize.mutateAsync({
+                owners: ownerAddresses,
+                threshold,
+                category,
+                nonce,
+            })
+
+            // Success logging
+            console.log('Wallet created successfully!', {
+                transaction: txSignature,
+                owners: ownerAddresses,
+                threshold,
+                category
+            })
+            toast.success(
+                `Multisig created!`,
+                { duration: 5000 }
+            )
+
             navigate("/dashboard")
-        } catch (error) {
-            console.error("Error creating wallet:", error)
+        } catch (error: any) {
+            toast.error(`Creation failed: ${error.message}`)
         } finally {
             setIsSubmitting(false)
         }
@@ -74,7 +115,6 @@ export default function CreateWallet() {
 
     return (
         <main className="min-h-screen bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
-            {/* Ambient background with moving particles */}
             <div className="h-full w-full absolute inset-0 z-0">
                 <SparklesCore
                     id="tsparticlesfullpage"
@@ -88,7 +128,6 @@ export default function CreateWallet() {
             </div>
 
             <div className="relative z-10">
-
                 <div className="container mx-auto px-6 py-8">
                     <Link to="/dashboard" className="inline-flex items-center text-purple-400 hover:text-purple-300 mb-6">
                         <ArrowLeft className="mr-2 h-4 w-4" />
@@ -198,8 +237,48 @@ export default function CreateWallet() {
                                             {threshold} signatures will be required to approve transactions
                                         </p>
                                     </div>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="nonce" className="text-white">
+                                            Wallet Nonce
+                                        </Label>
+                                        <Input
+                                            id="nonce"
+                                            type="number"
+                                            min="0"
+                                            max="255"
+                                            value={nonce}
+                                            onChange={(e) => setNonce(Math.min(255, Math.max(0, parseInt(e.target.value)) || 0))}
+                                            required
+                                            className="bg-gray-800/50 border-gray-700"
+                                        />
+                                        <p className="text-sm text-gray-400">
+                                            Unique identifier (0-255) for this wallet version
+                                        </p>
+                                    </div>
 
-                                    <Button type="submit" className="w-full bg-purple-600 hover:bg-purple-700" disabled={isSubmitting}>
+                                    <div className="space-y-2">
+                                        <Label htmlFor="category" className="text-white">
+                                            User Category
+                                        </Label>
+                                        <Select
+                                            value={category}
+                                            onValueChange={(value) => setCategory(value as UserCategory)}
+                                        >
+                                            <SelectTrigger className="bg-gray-800/50 border-gray-700">
+                                                <SelectValue placeholder="Select category" />
+                                            </SelectTrigger>
+                                            <SelectContent>
+                                                <SelectItem value={UserCategory.Free}>Free Tier</SelectItem>
+                                                <SelectItem value={UserCategory.Pro}>Pro Tier</SelectItem>
+                                            </SelectContent>
+                                        </Select>
+                                    </div>
+
+                                    <Button
+                                        type="submit"
+                                        className="w-full bg-purple-600 hover:bg-purple-700"
+                                        disabled={isSubmitting}
+                                    >
                                         {isSubmitting ? "Creating..." : "Create Multisig Wallet"}
                                     </Button>
                                 </form>
@@ -211,4 +290,3 @@ export default function CreateWallet() {
         </main>
     )
 }
-
