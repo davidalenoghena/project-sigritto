@@ -16,7 +16,7 @@ import toast from "react-hot-toast"
 const MAX_NONCE = 2 // Maximum nonce value per creator
 
 export default function Dashboard() {
-    const { publicKey } = useWallet()
+    const { publicKey, connecting } = useWallet()
     const { program } = useSigrittoProgram()
     const connection = useMemo(() => new Connection("https://api.devnet.solana.com"), [])
 
@@ -37,18 +37,14 @@ export default function Dashboard() {
                     program.programId
                 )[0]
             )
-            console.log(potentialWallets.length, "potential wallets from:", publicKey);
 
             // 2. Check existence efficiently
             const existenceChecks = await connection.getMultipleAccountsInfo(potentialWallets)
-
-            console.log(existenceChecks.length, "existenceeee...");
 
             // 3. Filter valid wallets
             const validWallets = potentialWallets.filter((wallet, index) =>
                 existenceChecks[index]?.data !== undefined
             )
-            console.log(validWallets.length, "valid wallets");
 
             // 4. Parallel fetch details
             const walletDetails = await Promise.all(
@@ -62,8 +58,6 @@ export default function Dashboard() {
                                 .then(acc => acc.pendingTransactions.length)
                                 .catch(() => 0)
                         ])
-
-                        console.log("trying...");
 
                         return {
                             publicKey: wallet,
@@ -81,14 +75,14 @@ export default function Dashboard() {
 
             console.log("just before returning giberish...");
 
-            return walletDetails.filter(Boolean).map(wallet => ({
+            return (walletDetails.filter(Boolean) as NonNullable<typeof walletDetails[number]>[]).map(wallet => ({
                 address: wallet.publicKey.toBase58(),
                 name: `Multisig #${wallet.nonce}`,
                 balance: wallet.balance.toFixed(4),
                 owners: wallet.account.owners.map((o: PublicKey) => o.toBase58()),
                 threshold: wallet.account.threshold,
                 pendingTxCount: wallet.pendingTxCount,
-                created: new Date(wallet.account.createdAt * 1000).toLocaleDateString()
+                created: new Date(Number(wallet.account.createdAt) * 1000).toLocaleDateString()
             }))
         },
         enabled: !!publicKey && !!program,
@@ -109,6 +103,15 @@ export default function Dashboard() {
             <div className="flex items-center justify-center h-screen bg-black">
                 <Loader className="animate-spin text-purple-500 w-12 h-12" />
                 <p className="ml-4 text-gray-400">Discovering multisig wallets...</p>
+            </div>
+        )
+    }
+
+    if (connecting) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-black">
+                <Loader className="animate-spin text-purple-500 w-12 h-12" />
+                <p className="ml-4 text-gray-400">Connecting your wallet...</p>
             </div>
         )
     }
