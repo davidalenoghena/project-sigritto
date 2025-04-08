@@ -230,7 +230,6 @@ export default function Dashboard() {
                                     <Link
                                         to={`/wallet/${wallet.address}`}
                                         className="w-full"
-                                        state={{ owners: wallet.owners }}
                                     >
                                         <Button
                                             variant="outline"
