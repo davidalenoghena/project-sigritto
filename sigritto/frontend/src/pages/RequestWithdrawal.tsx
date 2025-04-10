@@ -1,7 +1,5 @@
 "use client"
 
-import type React from "react"
-
 import { useState } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
@@ -12,36 +10,52 @@ import { SparklesCore } from "@/components/sparkles"
 import { ArrowLeft, Send } from "lucide-react"
 import { Link, useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
+import { PublicKey } from "@solana/web3.js"
+import { useSigrittoProgram } from "../components/sigritto_data/sigritto-data-access"
+import BN from "bn.js"
+import { LAMPORTS_PER_SOL } from "@solana/web3.js"
+import toast from "react-hot-toast"
 
 export default function RequestWithdrawal() {
     const params = useParams()
     const navigate = useNavigate()
     const walletId = params.id as string
-
-    const [recipient, setRecipient] = useState("")
     const [amount, setAmount] = useState("")
     const [description, setDescription] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
+    const { program, requestWithdrawal } = useSigrittoProgram()
 
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault()
         setIsSubmitting(true)
 
         try {
-            // Mock API call - would call your Solana program in production
-            await new Promise((resolve) => setTimeout(resolve, 1500))
+            // Validate inputs
+            const amountInSOL = Number.parseFloat(amount)
+            if (isNaN(amountInSOL) || amountInSOL <= 0) {
+                throw new Error("Invalid amount")
+            }
 
-            console.log({
-                walletId,
-                recipient,
-                amount: Number.parseFloat(amount),
-                description,
+            // Convert to lamports
+            const lamports = Math.round(amountInSOL * LAMPORTS_PER_SOL)
+            const amountBN = new BN(lamports)
+
+            // Get wallet details
+            const walletPublicKey = new PublicKey(walletId)
+            const account = await program.account.multisigWallet.fetch(walletPublicKey)
+
+            // Submit withdrawal request
+            await requestWithdrawal.mutateAsync({
+                creator: account.creator,
+                nonce: account.nonce,
+                amount: amountBN
             })
 
-            // Redirect back to wallet page on success
+            // Redirect back to wallet page
             navigate(`/wallet/${walletId}`)
-        } catch (error) {
+        } catch (error: any) {
             console.error("Error creating withdrawal request:", error)
+            toast.error(`Request failed: ${error.message}`)
         } finally {
             setIsSubmitting(false)
         }
@@ -49,7 +63,6 @@ export default function RequestWithdrawal() {
 
     return (
         <main className="min-h-screen bg-black/[0.96] antialiased bg-grid-white/[0.02] relative overflow-hidden">
-            {/* Ambient background with moving particles */}
             <div className="h-full w-full absolute inset-0 z-0">
                 <SparklesCore
                     id="tsparticlesfullpage"
@@ -63,7 +76,6 @@ export default function RequestWithdrawal() {
             </div>
 
             <div className="relative z-10">
-
                 <div className="container mx-auto px-6 py-8">
                     <Link
                         to={`/wallet/${walletId}`}
@@ -78,25 +90,11 @@ export default function RequestWithdrawal() {
                             <CardHeader>
                                 <CardTitle className="text-white">Request Withdrawal</CardTitle>
                                 <CardDescription className="text-gray-400">
-                                    Create a new withdrawal request that requires approval from other owners
+                                    Create a new withdrawal request that requires multi-signature approval
                                 </CardDescription>
                             </CardHeader>
                             <CardContent>
                                 <form onSubmit={handleSubmit} className="space-y-6">
-                                    <div className="space-y-2">
-                                        <Label htmlFor="recipient" className="text-white">
-                                            Recipient Address
-                                        </Label>
-                                        <Input
-                                            id="recipient"
-                                            placeholder="Solana Address"
-                                            value={recipient}
-                                            onChange={(e) => setRecipient(e.target.value)}
-                                            required
-                                            className="bg-gray-800/50 border-gray-700 font-mono text-sm"
-                                        />
-                                    </div>
-
                                     <div className="space-y-2">
                                         <Label htmlFor="amount" className="text-white">
                                             Amount (SOL)
@@ -123,7 +121,6 @@ export default function RequestWithdrawal() {
                                             placeholder="Purpose of this withdrawal"
                                             value={description}
                                             onChange={(e) => setDescription(e.target.value)}
-                                            required
                                             className="bg-gray-800/50 border-gray-700 min-h-[100px]"
                                         />
                                     </div>
@@ -147,4 +144,3 @@ export default function RequestWithdrawal() {
         </main>
     )
 }
-
