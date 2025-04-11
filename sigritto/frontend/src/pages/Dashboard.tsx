@@ -73,8 +73,6 @@ export default function Dashboard() {
                 })
             )
 
-            console.log("just before returning giberish...");
-
             return (walletDetails.filter(Boolean) as NonNullable<typeof walletDetails[number]>[]).map(wallet => ({
                 address: wallet.publicKey.toBase58(),
                 name: `Multisig #${wallet.nonce}`,

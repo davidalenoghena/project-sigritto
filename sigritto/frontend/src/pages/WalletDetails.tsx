@@ -58,7 +58,12 @@ export default function WalletDetails() {
         toast.success("Copied to clipboard")
     }
 
-    const getInitials = (address: string) => {
+    const getInitials = (address: PublicKey) => {
+        const addressString = address.toString()
+        return addressString.charAt(0).toUpperCase() + addressString.slice(-1).toUpperCase()
+    }
+
+    const getSInitials = (address: string) => {
         return address.charAt(0).toUpperCase() + address.slice(-1).toUpperCase()
     }
 
@@ -216,7 +221,7 @@ export default function WalletDetails() {
                                                         <div key={tx.id} className="border border-gray-800 rounded-lg p-4">
                                                             <div className="flex justify-between items-start mb-2">
                                                                 <div>
-                                                                    <h3 className="text-white font-medium">Transaction #{tx.id}</h3>
+                                                                    <h3 className="text-white font-medium">Transaction #{tx.id.toString()}</h3>
                                                                     <p className="text-sm text-gray-400">
                                                                         Created {formatDate(wallet.createdAt.toNumber())}
                                                                     </p>
@@ -226,7 +231,7 @@ export default function WalletDetails() {
                                                                 </Badge>
                                                             </div>
                                                             <div className="flex justify-between items-center mb-3">
-                                                                <div className="text-white font-medium">{(tx.amount / LAMPORTS_PER_SOL).toFixed(4)} SOL</div>
+                                                                <div className="text-white font-medium">{(tx.amount.toNumber() / LAMPORTS_PER_SOL).toFixed(4)} SOL</div>
                                                                 <div className="text-sm font-mono text-gray-400 truncate max-w-[200px]">
                                                                     To: {tx.to.toString()}
                                                                 </div>
@@ -243,10 +248,10 @@ export default function WalletDetails() {
                                                                     className="h-2 bg-gray-800"
                                                                 />
                                                                 <div className="flex items-center space-x-2 mt-2">
-                                                                    {tx.approvals.map((approver: string) => (
-                                                                        <Avatar key={approver} className="h-6 w-6">
+                                                                    {tx.approvals.map((approver: PublicKey) => (
+                                                                        <Avatar key={approver.toString()} className="h-6 w-6">
                                                                             <AvatarFallback className="bg-purple-600 text-xs">
-                                                                                {getInitials(approver)}
+                                                                                {getInitials(new PublicKey(approver))}
                                                                             </AvatarFallback>
                                                                         </Avatar>
                                                                     ))}
@@ -285,7 +290,7 @@ export default function WalletDetails() {
                                                     <div key={tx.id} className="border border-gray-800 rounded-lg p-4">
                                                         <div className="flex justify-between items-start mb-2">
                                                             <div>
-                                                                <h3 className="text-white font-medium">Transaction #{tx.id}</h3>
+                                                                <h3 className="text-white font-medium">Transaction #{tx.id.toString()}</h3>
                                                                 <p className="text-sm text-gray-400">
                                                                     Created {formatDate(wallet.createdAt.toNumber())}
                                                                 </p>
@@ -295,7 +300,7 @@ export default function WalletDetails() {
                                                             </Badge>
                                                         </div>
                                                         <div className="flex justify-between items-center mb-2">
-                                                            <div className="text-white font-medium">{(tx.amount / LAMPORTS_PER_SOL).toFixed(4)} SOL</div>
+                                                            <div className="text-white font-medium">{(tx.amount.toNumber() / LAMPORTS_PER_SOL).toFixed(4)} SOL</div>
                                                             <div className="text-sm font-mono text-gray-400 truncate max-w-[200px]">
                                                                 To: {tx.to.toString()}
                                                             </div>
@@ -337,8 +342,8 @@ export default function WalletDetails() {
                                                 >
                                                     <div className="flex items-center">
                                                         <Avatar className="h-10 w-10 mr-4">
-                                                            <AvatarFallback className="bg-purple-600">
-                                                                {getInitials(owner.toString())}
+                                                            <AvatarFallback className="bg-purple-600 text-xs">
+                                                                {getInitials(new PublicKey(owner))}
                                                             </AvatarFallback>
                                                         </Avatar>
                                                         <div>
