@@ -63,10 +63,6 @@ export default function WalletDetails() {
         return addressString.charAt(0).toUpperCase() + addressString.slice(-1).toUpperCase()
     }
 
-    const getSInitials = (address: string) => {
-        return address.charAt(0).toUpperCase() + address.slice(-1).toUpperCase()
-    }
-
     const formatDate = (timestamp: number) => {
         return new Date(timestamp * 1000).toLocaleDateString("en-US", {
             month: "short",
@@ -256,6 +252,15 @@ export default function WalletDetails() {
                                                                         </Avatar>
                                                                     ))}
                                                                 </div>
+                                                            </div>
+                                                            <div className="mt-4 flex space-x-2">
+                                                                <Button
+                                                                    className="w-full bg-purple-600 hover:bg-purple-700"
+                                                                    size="sm"
+                                                                    onClick={() => navigate(`/wallet/${wallet.publicKey}/transaction/${tx.id}`)}
+                                                                >
+                                                                    View Details
+                                                                </Button>
                                                             </div>
                                                         </div>
                                                     ))}
