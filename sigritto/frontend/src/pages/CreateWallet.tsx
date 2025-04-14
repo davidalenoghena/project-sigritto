@@ -70,8 +70,8 @@ export default function CreateWallet() {
         e.preventDefault()
 
         // Validate nonce range
-        if (nonce < 0 || nonce > 255) {
-            toast.error("Nonce must be between 0 and 255")
+        if (nonce < 0 || nonce > 10) {
+            toast.error("Nonce must be between 0 and 2")
             return
         }
 
@@ -85,6 +85,11 @@ export default function CreateWallet() {
                     throw new Error(`Invalid address: ${owner.address}`)
                 }
             })
+
+            const creatorAddress = publicKey.toString()
+            if (!ownerAddresses.includes(creatorAddress)) {
+                ownerAddresses.push(creatorAddress)
+            }
 
             const txSignature = await initialize.mutateAsync({
                 owners: ownerAddresses,

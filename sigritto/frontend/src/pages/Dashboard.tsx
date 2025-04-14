@@ -13,7 +13,7 @@ import { PublicKey, Connection, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { useQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 
-const MAX_NONCE = 2 // Maximum nonce value per creator
+const MAX_NONCE = 10 // Maximum nonce value per creator
 
 export default function Dashboard() {
     const { publicKey, connecting } = useWallet()
@@ -37,6 +37,17 @@ export default function Dashboard() {
                     program.programId
                 )[0]
             )
+            //manual temporary fix
+            //const potentialWallets = Array.from({ length: MAX_NONCE + 1 }, (_, nonce) =>
+            //    PublicKey.findProgramAddressSync(
+            //        [
+            //            Buffer.from('multisig'),
+            //            new PublicKey("FWkUamDQRgX98GDEv3E7f8FfBLb4wwBombmYtxdRoBBg").toBuffer(),
+            //            Buffer.from([4])
+            //        ],
+            //        program.programId
+            //    )[0]
+            //)
 
             // 2. Check existence efficiently
             //const existenceChecks = await connection.getMultipleAccountsInfo(potentialWallets)
@@ -72,8 +83,6 @@ export default function Dashboard() {
                     }
                 })
             )
-
-            console.log("just before returning giberish...");
 
             return (walletDetails.filter(Boolean) as NonNullable<typeof walletDetails[number]>[]).map(wallet => ({
                 address: wallet.publicKey.toBase58(),
@@ -230,7 +239,6 @@ export default function Dashboard() {
                                     <Link
                                         to={`/wallet/${wallet.address}`}
                                         className="w-full"
-                                        state={{ owners: wallet.owners }}
                                     >
                                         <Button
                                             variant="outline"
