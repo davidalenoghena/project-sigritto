@@ -340,7 +340,7 @@ export default function WalletDetails() {
                                     </CardHeader>
                                     <CardContent>
                                         <div className="space-y-4">
-                                            {wallet.account.owners.map((owner: PublicKey, index: number) => (
+                                            {wallet.account.owners.map((owner: PublicKey) => (
                                                 <div
                                                     key={owner.toString()}
                                                     className="flex items-center justify-between p-3 border border-gray-800 rounded-lg"
