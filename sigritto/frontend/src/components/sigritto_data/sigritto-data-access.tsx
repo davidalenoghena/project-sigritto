@@ -206,6 +206,15 @@ export function useSigrittoProgram() {
         enabled: !!program && !!creator
     });
 
+    const getMultisigWallet = (creator: PublicKey, nonce: number) => useQuery({
+        queryKey: ['multisigWallet', { cluster, creator: creator.toBase58(), nonce }],
+        queryFn: async () => {
+            const multisigPDA = getMultisigPDA(creator, nonce);
+            return program.account.multisigWallet.fetch(multisigPDA);
+        },
+        enabled: !!program && !!creator
+    });
+
     return {
         program,
         programId,
@@ -216,6 +225,7 @@ export function useSigrittoProgram() {
         getWalletBalance,
         getPendingTransactions,
         getOwners,
-        fetchMultisigAccount
+        fetchMultisigAccount,
+        getMultisigWallet
     };
 }

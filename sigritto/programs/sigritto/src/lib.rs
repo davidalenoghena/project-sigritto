@@ -1,5 +1,5 @@
 use anchor_lang::prelude::*;
-use anchor_lang::solana_program::{pubkey::Pubkey, system_instruction};
+use anchor_lang::solana_program::pubkey::Pubkey;
 
 declare_id!("FvQihDMQ3Y55X3ZV1oowcm5CM2iwgioEiyV54KfXPWks"); // Replace with your actual program ID
 
@@ -116,7 +116,6 @@ pub mod multisig_wallet {
     /// Execute a pending withdrawal request once threshold is met
     pub fn execute_request(ctx: Context<ExecuteRequest>, transaction_id: u64) -> Result<()> {
     // Extract necessary data before mutable borrows
-    let bump = ctx.bumps.multisig;
     let multisig = &mut ctx.accounts.multisig;
 
     let transaction_index = multisig
@@ -141,37 +140,9 @@ pub mod multisig_wallet {
     let balance = multisig.to_account_info().lamports();
     require!(transaction.amount <= balance, MultisigError::InsufficientBalance);
     
-    // Prepare PDA signature
-    let seeds = &[
-        b"multisig".as_ref(),
-        multisig.creator.as_ref(),
-        &[multisig.nonce],
-        &[bump],
-    ];
-
-    // Perform the transfer using the extracted data
-    // let transfer_instruction = system_instruction::transfer(
-    //     &multisig_key,
-    //     &to,
-    //     amount,
-    // );
-
-    let transfer_instruction = system_instruction::transfer(
-        &multisig.key(),
-        &transaction.to,
-        transaction.amount,
-    );
-    
-    anchor_lang::solana_program::program::invoke_signed(
-        &transfer_instruction,
-        &[
-            multisig.to_account_info(), // Use existing mutable reference
-            ctx.accounts.recipient.to_account_info(),
-            ctx.accounts.system_program.to_account_info(),
-        ],
-        &[seeds],
-    )?;
-
+    // Directly transfer lamports (no System Program needed)
+    **multisig.to_account_info().try_borrow_mut_lamports()? -= transaction.amount;
+    **ctx.accounts.recipient.try_borrow_mut_lamports()? += transaction.amount;
     // Update state after transfer
     multisig.pending_transactions.remove(transaction_index);
     

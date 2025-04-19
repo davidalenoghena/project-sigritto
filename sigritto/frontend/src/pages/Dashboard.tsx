@@ -12,12 +12,13 @@ import { useWallet } from "@solana/wallet-adapter-react"
 import { PublicKey, Connection, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { useQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
+import MultisigSearch from "../components/MultisigSearch";
 
 const MAX_NONCE = 10 // Maximum nonce value per creator
 
 export default function Dashboard() {
     const { publicKey, connecting } = useWallet()
-    const { program } = useSigrittoProgram()
+    const { program, getMultisigWallet } = useSigrittoProgram()
     const connection = useMemo(() => new Connection("https://api.devnet.solana.com"), [])
 
     // Main wallets query
@@ -189,6 +190,8 @@ export default function Dashboard() {
                         </Button>
                     </Link>
                 </div>
+
+                <MultisigSearch getMultisigWallet={getMultisigWallet} programId={program.programId} />
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {wallets?.map((wallet) => (
