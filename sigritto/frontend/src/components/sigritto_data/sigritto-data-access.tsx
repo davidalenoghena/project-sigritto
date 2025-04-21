@@ -1,8 +1,6 @@
 'use client';
 
 import { getSigrittoProgram, getSigrittoProgramId, UserCategory } from './sigritto-exports';
-//import { Program, AnchorProvider } from '@coral-xyz/anchor';
-//import { useConnection } from '@solana/wallet-adapter-react';
 import { Cluster, PublicKey } from '@solana/web3.js';
 import { useMutation, useQuery } from '@tanstack/react-query';
 import { useMemo } from 'react';
@@ -44,11 +42,16 @@ export function useSigrittoProgram() {
     const transactionToast = useTransactionToast();
     const provider = useAnchorProvider();
 
+    // Add null check for provider
+    const program = useMemo(() => {
+        return provider ? getSigrittoProgram(provider) : null
+    }, [provider])
+
     const programId = useMemo(
         () => getSigrittoProgramId(cluster.network as Cluster),
         [cluster]
     );
-    const program = getSigrittoProgram(provider);
+    // const program = getSigrittoProgram(provider);
 
     // Helper to compute PDA
     const getMultisigPDA = (creator: PublicKey, nonce: number) => {
@@ -216,7 +219,7 @@ export function useSigrittoProgram() {
     });
 
     return {
-        program,
+        program: program || undefined,
         programId,
         initialize,
         requestWithdrawal,
