@@ -13,10 +13,20 @@ import { PublicKey, Connection, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { useQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 
-const MAX_NONCE = 10 // Maximum nonce value per creator
+const MAX_NONCE = 5 // Maximum nonce value per creator
 
 export default function Dashboard() {
     const { publicKey, connecting } = useWallet()
+
+    if (!publicKey) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-black">
+                <Loader className="animate-spin text-purple-500 w-12 h-12" />
+                <p className="ml-4 text-gray-400">Initializing wallet connection...</p>
+            </div>
+        )
+    }
+
     const { program } = useSigrittoProgram()
     const connection = useMemo(() => new Connection("https://api.devnet.solana.com"), [])
 

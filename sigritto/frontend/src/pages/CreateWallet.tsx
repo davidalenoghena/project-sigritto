@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SparklesCore } from "@/components/sparkles"
-import { Plus, Trash2, ArrowLeft, Users } from "lucide-react"
+import { Plus, Trash2, ArrowLeft, Users, Loader } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -25,13 +25,22 @@ import { PublicKey } from "@solana/web3.js"
 export default function CreateWallet() {
     const { initialize } = useSigrittoProgram();
     const { publicKey } = useWallet();
+
+    if (!publicKey) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-black">
+                <Loader className="animate-spin text-purple-500 w-12 h-12" />
+                <p className="ml-4 text-gray-400">Initializing wallet connection...</p>
+            </div>
+        )
+    }
+
     const navigate = useNavigate()
 
     // Form states
-    const [walletName, setWalletName] = useState("")
     const [owners, setOwners] = useState([
-        { address: "", label: "" },
-        { address: "", label: "" },
+        { address: "" },
+        { address: "" },
     ])
     const [threshold, setThreshold] = useState(2)
     const [category, setCategory] = useState<UserCategory>(UserCategory.Free)
@@ -44,7 +53,7 @@ export default function CreateWallet() {
 
     const addOwner = () => {
         if (owners.length < 5) {
-            setOwners([...owners, { address: "", label: "" }])
+            setOwners([...owners, { address: "" }])
         }
     }
 
@@ -60,7 +69,7 @@ export default function CreateWallet() {
         }
     }
 
-    const updateOwner = (index: number, field: "address" | "label", value: string) => {
+    const updateOwner = (index: number, field: "address", value: string) => {
         const newOwners = [...owners]
         newOwners[index][field] = value
         setOwners(newOwners)
@@ -70,8 +79,8 @@ export default function CreateWallet() {
         e.preventDefault()
 
         // Validate nonce range
-        if (nonce < 0 || nonce > 10) {
-            toast.error("Nonce must be between 0 and 2")
+        if (nonce < 0 || nonce > 5) {
+            toast.error("Nonce must be between 0 and 5")
             return
         }
 
@@ -150,20 +159,24 @@ export default function CreateWallet() {
                             <CardContent>
                                 <form onSubmit={handleSubmit} className="space-y-6">
                                     <div className="space-y-2">
-                                        <Label htmlFor="walletName" className="text-white">
-                                            Wallet Name
+                                        <Label htmlFor="nonce" className="text-white">
+                                            Wallet Nonce
                                         </Label>
                                         <Input
-                                            id="walletName"
-                                            placeholder="Team Treasury"
-                                            value={walletName}
-                                            onChange={(e) => setWalletName(e.target.value)}
+                                            id="nonce"
+                                            type="number"
+                                            min="0"
+                                            max="255"
+                                            value={nonce}
+                                            onChange={(e) => setNonce(Math.min(255, Math.max(0, parseInt(e.target.value)) || 0))}
                                             required
                                             className="bg-gray-800/50 border-gray-700"
                                         />
+                                        <p className="text-sm text-gray-400">
+                                            Unique identifier (0-6) for this wallet version
+                                        </p>
                                     </div>
-
-                                    <div className="space-y-4">
+                                    <div className="space-y-2">
                                         <div className="flex items-center justify-between">
                                             <Label className="text-white flex items-center">
                                                 <Users className="mr-2 h-4 w-4" />
@@ -185,15 +198,7 @@ export default function CreateWallet() {
 
                                         {owners.map((owner, index) => (
                                             <div key={index} className="grid grid-cols-12 gap-2 items-center">
-                                                <div className="col-span-5">
-                                                    <Input
-                                                        placeholder="Owner Label (e.g. David)"
-                                                        value={owner.label}
-                                                        onChange={(e) => updateOwner(index, "label", e.target.value)}
-                                                        className="bg-gray-800/50 border-gray-700"
-                                                    />
-                                                </div>
-                                                <div className="col-span-6">
+                                                <div className="col-span-12">
                                                     <Input
                                                         placeholder="Solana Address"
                                                         value={owner.address}
@@ -242,25 +247,7 @@ export default function CreateWallet() {
                                             {threshold} signatures will be required to approve transactions
                                         </p>
                                     </div>
-                                    <div className="space-y-2">
-                                        <Label htmlFor="nonce" className="text-white">
-                                            Wallet Nonce
-                                        </Label>
-                                        <Input
-                                            id="nonce"
-                                            type="number"
-                                            min="0"
-                                            max="255"
-                                            value={nonce}
-                                            onChange={(e) => setNonce(Math.min(255, Math.max(0, parseInt(e.target.value)) || 0))}
-                                            required
-                                            className="bg-gray-800/50 border-gray-700"
-                                        />
-                                        <p className="text-sm text-gray-400">
-                                            Unique identifier (0-255) for this wallet version
-                                        </p>
-                                    </div>
-
+                                    
                                     <div className="space-y-2">
                                         <Label htmlFor="category" className="text-white">
                                             User Category

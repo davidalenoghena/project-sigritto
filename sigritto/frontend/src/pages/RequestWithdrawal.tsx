@@ -5,7 +5,6 @@ import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
 import { SparklesCore } from "@/components/sparkles"
 import { ArrowLeft, Send } from "lucide-react"
 import { Link, useParams, useNavigate } from "react-router-dom"
@@ -21,7 +20,6 @@ export default function RequestWithdrawal() {
     const navigate = useNavigate()
     const walletId = params.id as string
     const [amount, setAmount] = useState("")
-    const [description, setDescription] = useState("")
     const [isSubmitting, setIsSubmitting] = useState(false)
     const { program, requestWithdrawal } = useSigrittoProgram()
 
@@ -109,19 +107,6 @@ export default function RequestWithdrawal() {
                                             onChange={(e) => setAmount(e.target.value)}
                                             required
                                             className="bg-gray-800/50 border-gray-700"
-                                        />
-                                    </div>
-
-                                    <div className="space-y-2">
-                                        <Label htmlFor="description" className="text-white">
-                                            Description
-                                        </Label>
-                                        <Textarea
-                                            id="description"
-                                            placeholder="Purpose of this withdrawal"
-                                            value={description}
-                                            onChange={(e) => setDescription(e.target.value)}
-                                            className="bg-gray-800/50 border-gray-700 min-h-[100px]"
                                         />
                                     </div>
 
