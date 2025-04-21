@@ -42,16 +42,11 @@ export function useSigrittoProgram() {
     const transactionToast = useTransactionToast();
     const provider = useAnchorProvider();
 
-    // Add null check for provider
-    const program = useMemo(() => {
-        return provider ? getSigrittoProgram(provider) : null
-    }, [provider])
-
     const programId = useMemo(
         () => getSigrittoProgramId(cluster.network as Cluster),
         [cluster]
     );
-    // const program = getSigrittoProgram(provider);
+    const program = getSigrittoProgram(provider);
 
     // Helper to compute PDA
     const getMultisigPDA = (creator: PublicKey, nonce: number) => {
@@ -219,7 +214,7 @@ export function useSigrittoProgram() {
     });
 
     return {
-        program: program || undefined,
+        program,
         programId,
         initialize,
         requestWithdrawal,

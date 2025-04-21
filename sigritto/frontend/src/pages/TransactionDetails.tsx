@@ -4,7 +4,7 @@ import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { SparklesCore } from "@/components/sparkles"
-import { ArrowLeft, Copy, CheckCircle2, Clock, AlertTriangle } from "lucide-react"
+import { ArrowLeft, Copy, CheckCircle2, Clock, AlertTriangle, Loader } from "lucide-react"
 import { Link, useParams, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Badge } from "@/components/ui/badge"
@@ -21,6 +21,16 @@ import { LAMPORTS_PER_SOL } from "@solana/web3.js"
 export default function TransactionDetails() {
     const { program, approveRequest, executeRequest } = useSigrittoProgram()
     const { publicKey } = useWallet()
+
+    if (!publicKey) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-black">
+                <Loader className="animate-spin text-purple-500 w-12 h-12" />
+                <p className="ml-4 text-gray-400">Initializing wallet connection...</p>
+            </div>
+        )
+    }
+
     const params = useParams()
     const navigate = useNavigate()
     const walletAddress = params.id as string

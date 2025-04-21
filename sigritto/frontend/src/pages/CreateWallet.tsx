@@ -8,7 +8,7 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SparklesCore } from "@/components/sparkles"
-import { Plus, Trash2, ArrowLeft, Users } from "lucide-react"
+import { Plus, Trash2, ArrowLeft, Users, Loader } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -25,6 +25,16 @@ import { PublicKey } from "@solana/web3.js"
 export default function CreateWallet() {
     const { initialize } = useSigrittoProgram();
     const { publicKey } = useWallet();
+
+    if (!publicKey) {
+        return (
+            <div className="flex items-center justify-center h-screen bg-black">
+                <Loader className="animate-spin text-purple-500 w-12 h-12" />
+                <p className="ml-4 text-gray-400">Initializing wallet connection...</p>
+            </div>
+        )
+    }
+
     const navigate = useNavigate()
 
     // Form states
