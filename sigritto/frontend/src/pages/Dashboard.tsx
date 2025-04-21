@@ -1,6 +1,6 @@
 ﻿"use client"
 
-import { useEffect, useMemo } from "react"
+import { useEffect, useMemo, useState } from "react"
 import { Button } from "../components/ui/button"
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from "../components/ui/card"
 import { SparklesCore } from "../components/sparkles"
@@ -12,14 +12,74 @@ import { useWallet } from "@solana/wallet-adapter-react"
 import { PublicKey, Connection, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { useQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
-import MultisigSearch from "../components/MultisigSearch";
+// import MultisigSearch from "../components/MultisigSearch";
 
 const MAX_NONCE = 10 // Maximum nonce value per creator
 
 export default function Dashboard() {
     const { publicKey, connecting } = useWallet()
-    const { program, getMultisigWallet } = useSigrittoProgram()
+    const { program, searchMultisigWallet } = useSigrittoProgram()
     const connection = useMemo(() => new Connection("https://api.devnet.solana.com"), [])
+
+    const [searchCreatorInput, setSearchCreatorInput] = useState("");
+    const [searchNonceInput, setSearchNonceInput] = useState("");
+    const [searchCreator, setSearchCreator] = useState<PublicKey | null>(null);
+    const [searchNonce, setSearchNonce] = useState<number | null>(null);
+
+    // Search result query
+    const {
+        data: searchResult,
+        isLoading: isSearching,
+        error: searchError
+    } = useQuery({
+        queryKey: ['searchedMultisig', searchCreator?.toBase58(), searchNonce],
+        queryFn: async () => {
+            if (!searchCreator || searchNonce === null) return null
+
+            // Use the program method directly
+            const multisigPDA = PublicKey.findProgramAddressSync([
+                Buffer.from('multisig'),
+                searchCreator.toBuffer(),
+                Buffer.from([searchNonce])
+            ], program.programId);
+
+            const account = await program.account.multisigWallet.fetch(multisigPDA[0]);
+            const balance = await connection.getBalance(multisigPDA[0]);
+
+            return {
+                publicKey: multisigPDA[0],
+                account,
+                balance: balance / LAMPORTS_PER_SOL,
+                nonce: searchNonce
+            };
+        },
+        enabled: !!searchCreator && searchNonce !== null,
+        retry: 1 // Optional: Reduce retries for non-existent accounts
+    });
+
+    // Form submission handler
+    const handleSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
+
+        try {
+            // Validate creator public key
+            const creator = new PublicKey(searchCreatorInput.trim());
+            setSearchCreator(creator);
+
+            // Validate nonce
+            const nonce = parseInt(searchNonceInput);
+            if (isNaN(nonce) || nonce < 0 || nonce > MAX_NONCE) {
+                throw new Error(`Nonce must be between 0 and ${MAX_NONCE}`);
+            }
+            setSearchNonce(nonce);
+
+        } catch (error: any) {
+            toast.error(`Invalid input: ${error.message}`);
+            setSearchCreator(null);
+            setSearchNonce(null);
+        }
+    };
+
 
     // Main wallets query
     const { data: wallets, isLoading, error } = useQuery({
@@ -191,7 +251,104 @@ export default function Dashboard() {
                     </Link>
                 </div>
 
-                <MultisigSearch getMultisigWallet={getMultisigWallet} programId={program.programId} />
+                {/* Search Section */}
+                <div className="mb-8">
+                    <h2 className="text-xl font-semibold text-white mb-4">Search Multisig Wallet</h2>
+                    <form onSubmit={handleSubmit}>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <input
+                                type="text"
+                                placeholder="Creator Public Key"
+                                value={searchCreatorInput}
+                                onChange={(e) => setSearchCreatorInput(e.target.value)}
+                                className="bg-gray-800 text-white p-2 rounded"
+                            />
+                            <input
+                                type="number"
+                                placeholder={`Nonce (0-${MAX_NONCE})`}
+                                value={searchNonceInput}
+                                onChange={(e) => setSearchNonceInput(e.target.value)}
+                                className="bg-gray-800 text-white p-2 rounded"
+                            />
+                        </div>
+                        <Button type="submit" className="mt-4 bg-purple-600 hover:bg-purple-700">
+                            Search Wallet
+                        </Button>
+                    </form>
+                </div>
+
+                {/* Search Results */}
+                {isSearching && (
+                    <div className="flex items-center space-x-2 mt-4">
+                        <Loader className="animate-spin text-purple-500 w-6 h-6" />
+                        <p className="text-gray-400">Searching multisig wallet...</p>
+                    </div>
+                )}
+                {searchError && (
+                    <div className="text-red-500 mt-4">
+                        {searchError.message || "Wallet not found"}
+                    </div>
+                )}
+                {searchResult && (
+                    <motion.div
+                        initial={{ opacity: 0, y: 20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.3 }}
+                    >
+                        <Card className="bg-gray-900/50 border-gray-800 mt-6">
+                            <CardHeader>
+                                <CardTitle className="text-white flex justify-between">
+                                    {`Multisig #${searchNonce}`}
+                                    {searchResult.account.pendingTransactions.length > 0 && (
+                                        <span className="bg-amber-600/20 text-amber-400 text-xs px-2 py-1 rounded-full flex items-center">
+                                            <Clock className="w-3 h-3 mr-1" />
+                                            {searchResult.account.pendingTransactions.length} Pending
+                                        </span>
+                                    )}
+                                </CardTitle>
+                                <CardDescription className="text-gray-400 font-mono text-sm">
+                                    {searchCreatorInput.slice(0, 6)}...{searchCreatorInput.slice(-4)}
+                                </CardDescription>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="space-y-2">
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Balance:</span>
+                                        <span className="text-white font-medium">
+                                            {searchResult.balance / LAMPORTS_PER_SOL} SOL
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Owners:</span>
+                                        <span className="text-white">
+                                            {searchResult.account.owners.length}
+                                        </span>
+                                    </div>
+                                    <div className="flex justify-between">
+                                        <span className="text-gray-400">Threshold:</span>
+                                        <span className="text-white">
+                                            {searchResult.account.threshold} of {searchResult.account.owners.length}
+                                        </span>
+                                    </div>
+                                </div>
+                            </CardContent>
+                            <CardFooter>
+                                <Link
+                                    to={`/wallet/${searchResult.publicKey}`}
+                                    className="w-full"
+                                >
+                                    <Button
+                                        variant="outline"
+                                        className="w-full border-purple-500/30 text-purple-400 hover:bg-purple-500/20"
+                                    >
+                                        View Details
+                                        <ArrowRight className="ml-2 h-4 w-4" />
+                                    </Button>
+                                </Link>
+                            </CardFooter>
+                        </Card>
+                    </motion.div>
+                )}
 
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
                     {wallets?.map((wallet) => (
