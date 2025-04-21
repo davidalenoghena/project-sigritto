@@ -13,7 +13,7 @@ import { PublicKey, Connection, LAMPORTS_PER_SOL } from "@solana/web3.js"
 import { useQuery } from "@tanstack/react-query"
 import toast from "react-hot-toast"
 
-const MAX_NONCE = 10 // Maximum nonce value per creator
+const MAX_NONCE = 5 // Maximum nonce value per creator
 
 export default function Dashboard() {
     const { publicKey, connecting } = useWallet()
