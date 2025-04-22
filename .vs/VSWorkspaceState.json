@@ -5,12 +5,11 @@
     "\\sigritto\\frontend",
     "\\sigritto\\frontend\\src",
     "\\sigritto\\frontend\\src\\components",
-    "\\sigritto\\frontend\\src\\components\\sigritto_data",
     "\\sigritto\\frontend\\src\\pages",
     "\\sigritto\\programs",
     "\\sigritto\\programs\\sigritto",
     "\\sigritto\\programs\\sigritto\\src"
   ],
-  "SelectedNode": "\\sigritto\\programs\\sigritto\\src\\lib.rs",
+  "SelectedNode": "\\sigritto\\frontend\\src\\components\\MultisigSearch.tsx",
   "PreviewInSolutionExplorer": false
 }
