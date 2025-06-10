@@ -64,7 +64,7 @@ export const SolanaProvider = ({ children }: WalletProviderProps) => {
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
                 <WalletModalProvider>
-                    <CivicAuthProvider clientId="a6a20cfd-84da-49a4-a0fe-5c87eb19eb5b">
+                    <CivicAuthProvider clientId={import.meta.env.VITE_CIVIC_CLIENT_ID}>
                         {children}
                     </CivicAuthProvider>
                 </WalletModalProvider>
