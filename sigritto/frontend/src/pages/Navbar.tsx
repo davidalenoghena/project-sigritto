@@ -41,7 +41,7 @@ export default function Navbar() {
   const userContext = useUser();
 
   if (userContext.user && !userHasWallet(userContext)) {
-    console.log("Creating wallet...")
+    console.log("Creating wallet...");
     userContext.createWallet();
   }
 
