@@ -11,7 +11,9 @@ import {
     PhantomWalletAdapter,
     SolflareWalletAdapter,
 } from "@solana/wallet-adapter-wallets";
-import { BackpackWalletAdapter } from '@solana/wallet-adapter-backpack';
+
+import { CivicAuthProvider } from "@civic/auth-web3/react";
+
 import {
     WalletModalProvider,
     WalletMultiButton,
@@ -53,7 +55,6 @@ export const SolanaProvider = ({ children }: WalletProviderProps) => {
         () => [
             new PhantomWalletAdapter(),
             new SolflareWalletAdapter(),
-            new BackpackWalletAdapter()
             // Add more wallets as needed
         ],
         [cluster.network] // Update wallets when network changes
@@ -62,7 +63,11 @@ export const SolanaProvider = ({ children }: WalletProviderProps) => {
     return (
         <ConnectionProvider endpoint={endpoint}>
             <WalletProvider wallets={wallets} autoConnect>
-                <WalletModalProvider>{children}</WalletModalProvider>
+                <WalletModalProvider>
+                    <CivicAuthProvider clientId="a6a20cfd-84da-49a4-a0fe-5c87eb19eb5b">
+                        {children}
+                    </CivicAuthProvider>
+                </WalletModalProvider>
             </WalletProvider>
         </ConnectionProvider>
     );
