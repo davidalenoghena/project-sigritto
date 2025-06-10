@@ -18,7 +18,7 @@ import { CivicAuthProvider } from "@civic/auth-web3/react";
 function App() {
     return (
         <ReactQueryProvider>
-            <CivicAuthProvider clientId={import.meta.env.CIVIC_CLIENT_ID}>
+            <CivicAuthProvider clientId={import.meta.env.VITE_CIVIC_CLIENT_ID}>
                 <ClusterProvider>
                     <SolanaProvider>
                             <Router>
