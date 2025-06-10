@@ -10,6 +10,9 @@ import { motion, AnimatePresence } from "framer-motion"
 //import { useWallet } from '@solana/wallet-adapter-react'
 import { CustomWalletMultiButton } from "@/components/walletConnect";
 
+import { userHasWallet } from "@civic/auth-web3";
+import { useUser } from "@civic/auth-web3/react";
+
 const navItems = [
   { name: "How it Works", path: "/how-it-works" },
   { name: "Pricing", path: "/pricing" },
@@ -25,7 +28,23 @@ function NavLink({ to, children }: { to: string; children: React.ReactNode }) {
         </Link>
     )
 }
+
+// export const afterLogin = async () => {
+//   const userContext = await useUser();
+
+//   if (userContext.user && !userHasWallet(userContext)) {
+//     await userContext.createWallet();
+//   }
+// };
+
 export default function Navbar() {
+  const userContext = useUser();
+
+  if (userContext.user && !userHasWallet(userContext)) {
+    console.log("Creating wallet...")
+    userContext.createWallet();
+  }
+
   const [isOpen, setIsOpen] = useState(false)
 
   return (
@@ -54,7 +73,7 @@ export default function Navbar() {
           </div>
           <div className="hidden md:block">
             <div className="ml-4 flex items-center md:ml-6">
-                          <CustomWalletMultiButton />
+                <CustomWalletMultiButton />
             </div>
           </div>
           <div className="md:hidden flex items-center">
