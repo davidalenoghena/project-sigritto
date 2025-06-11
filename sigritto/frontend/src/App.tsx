@@ -33,7 +33,6 @@ function App() {
                                         <Route path="/wallet/:id" element={<WalletDetails />} />
                                         <Route path="/wallet/:id/request" element={<RequestWithdrawal />} />
                                         <Route path="/wallet/:id/transaction/:txId" element={<TransactionDetails />} />
-                                        {/* Add other routes as needed */}
                                     </Routes>
                                 </div>
                             </Router>
