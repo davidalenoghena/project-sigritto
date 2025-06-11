@@ -21,7 +21,7 @@ Sigritto is a decentralized, multisignature wallet platform built on the Solana 
 
 ### 1. Clone the Repository
 ```bash
-git clone <repo-url>
+git clone https://github.com/davidalenoghena/project-sigritto
 cd project-sigritto/sigritto
 ```
 
