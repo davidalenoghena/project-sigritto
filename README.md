@@ -9,6 +9,31 @@ Sigritto is a decentralized, multisignature wallet platform built on the Solana 
 
 ---
 
+## Using the Live Application
+You can try Sigritto right now by following these steps:
+
+1. **Visit the live application:**  
+   Go to [https://project-sigritto.vercel.app/](https://project-sigritto.vercel.app/)
+
+2. **Connect your wallet:**  
+   Use any standard web3 wallet (Phantom, Backpack, etc.) or sign in with your Google account using Civic Auth
+
+3. **Get test tokens:**  
+   Since the app is currently in dev mode:
+   - Visit the Sonic faucet: [https://faucet.sonic.game/#/](https://faucet.sonic.game/#/)
+   - Request test tokens to your connected wallet address
+
+4. **Create a multisignature wallet:**  
+   - Navigate to the dashboard
+   - Set up a new multisig wallet with your desired approval thresholds
+
+5. **Initiate transactions:**  
+   - Create withdrawal requests from your multisig wallet
+   - Have other signers approve/deny requests
+   - Execute approved transactions
+
+---
+
 ## Prerequisites
 - [Node.js](https://nodejs.org/) (v18+ recommended)
 - [npm](https://www.npmjs.com/) (comes with Node.js)
@@ -17,7 +42,7 @@ Sigritto is a decentralized, multisignature wallet platform built on the Solana 
 
 ---
 
-## Getting Started
+## Getting Started - To Clone Locally
 
 ### 1. Clone the Repository
 ```bash
