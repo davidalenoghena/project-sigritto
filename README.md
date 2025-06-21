@@ -16,7 +16,7 @@ You can try Sigritto right now by following these steps:
    Go to [https://project-sigritto.vercel.app/](https://project-sigritto.vercel.app/)
 
 2. **Connect your wallet:**  
-   Use any standard web3 wallet (Phantom, Backpack, etc.) or sign in with your Google account using Civic Auth
+   Use any standard web3 wallet (Phantom, Backpack, etc.) or sign in with your Google account using Civic Auth. If using Phantom, go to settings > Developer Settings and set it to test mode
 
 3. **Get test tokens:**  
    Since the app is currently in dev mode:
