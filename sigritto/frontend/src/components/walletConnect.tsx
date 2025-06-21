@@ -19,7 +19,7 @@ import {
     WalletMultiButton,
 } from "@solana/wallet-adapter-react-ui";
 import { AnchorProvider } from "@coral-xyz/anchor";
-import { useCluster } from "@/components/cluster/cluster-data-access";
+//import { useCluster } from "@/components/cluster/cluster-data-access";
 import "@solana/wallet-adapter-react-ui/styles.css";
 
 interface WalletProviderProps {
@@ -47,7 +47,7 @@ const connectButtonStyles: React.CSSProperties = {
 };
 
 export const SolanaProvider = ({ children }: WalletProviderProps) => {
-    const { cluster } = useCluster();
+    //const { cluster } = useCluster();
     //const endpoint = useMemo(() => cluster.endpoint, [cluster]);
     const endpoint = "https://api.testnet.sonic.game"
 
