@@ -155,7 +155,7 @@ export default function WalletDetails() {
                                     <CardTitle className="text-white text-lg">Balance</CardTitle>
                                 </CardHeader>
                                 <CardContent>
-                                    <div className="text-3xl font-bold text-white">{wallet.balance.toFixed(4)} SOL</div>
+                                    <div className="text-3xl font-bold text-white">{wallet.balance.toFixed(2)} SOL</div>
                                 </CardContent>
                             </Card>
 
