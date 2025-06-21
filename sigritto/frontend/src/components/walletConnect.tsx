@@ -56,7 +56,7 @@ export const SolanaProvider = ({ children }: WalletProviderProps) => {
             new PhantomWalletAdapter(),
             new SolflareWalletAdapter(),
         ],
-        [cluster.network]
+        []
     );
 
     return (
