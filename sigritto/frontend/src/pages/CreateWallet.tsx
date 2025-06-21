@@ -8,11 +8,13 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { SparklesCore } from "@/components/sparkles"
-import { Plus, Trash2, ArrowLeft, Users, Loader } from "lucide-react"
+import { Plus, Trash2, ArrowLeft, Users, Loader, Wallet } from "lucide-react"
 import { Link, useNavigate } from "react-router-dom"
 import { motion } from "framer-motion"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import toast from 'react-hot-toast';
+import { useQuery } from "@tanstack/react-query"
+import { Connection, LAMPORTS_PER_SOL } from "@solana/web3.js"
 
 import {
     useSigrittoProgram,
@@ -36,6 +38,18 @@ export default function CreateWallet() {
     }
 
     const navigate = useNavigate()
+
+    // Balance query
+    const { data: balance, isLoading: isBalanceLoading } = useQuery({
+        queryKey: ['walletBalance', publicKey?.toBase58()],
+        queryFn: async () => {
+            const connection = new Connection("https://api.testnet.sonic.game", "confirmed");
+            const balance = await connection.getBalance(publicKey!);
+            return balance / LAMPORTS_PER_SOL;
+        },
+        enabled: !!publicKey,
+        refetchInterval: 10000, // Refetch every 10 seconds
+    });
 
     // Form states
     const [owners, setOwners] = useState([
@@ -148,7 +162,46 @@ export default function CreateWallet() {
                         Back to Dashboard
                     </Link>
 
-                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3 }}>
+                    {/* Wallet Balance Section */}
+                    <motion.div 
+                        initial={{ opacity: 0, y: 20 }} 
+                        animate={{ opacity: 1, y: 0 }} 
+                        transition={{ duration: 0.3 }}
+                        className="mb-6"
+                    >
+                        <Card className="max-w-2xl mx-auto bg-gray-900/50 border-gray-800 backdrop-blur-sm">
+                            <CardHeader className="pb-3">
+                                <CardTitle className="text-white flex items-center">
+                                    <Wallet className="mr-2 h-5 w-5 text-purple-400" />
+                                    Connected Wallet Balance
+                                </CardTitle>
+                            </CardHeader>
+                            <CardContent>
+                                <div className="flex items-center justify-between">
+                                    <div>
+                                        <p className="text-gray-400 text-sm">Wallet Address</p>
+                                        <p className="text-white font-mono text-sm truncate max-w-xs">
+                                            {publicKey.toString()}
+                                        </p>
+                                    </div>
+                                    <div className="text-right">
+                                        <p className="text-gray-400 text-sm">Balance</p>
+                                        <div className="flex items-center">
+                                            {isBalanceLoading ? (
+                                                <Loader className="animate-spin text-purple-500 w-4 h-4 mr-2" />
+                                            ) : (
+                                                <span className="text-2xl font-bold text-white">
+                                                    {balance?.toFixed(4) || '0.0000'} SOL
+                                                </span>
+                                            )}
+                                        </div>
+                                    </div>
+                                </div>
+                            </CardContent>
+                        </Card>
+                    </motion.div>
+
+                    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: 0.3, delay: 0.1 }}>
                         <Card className="max-w-2xl mx-auto bg-gray-900/50 border-gray-800 backdrop-blur-sm">
                             <CardHeader>
                                 <CardTitle className="text-white">Create Multisig Wallet</CardTitle>

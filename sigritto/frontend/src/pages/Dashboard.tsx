@@ -324,7 +324,7 @@ export default function Dashboard() {
                                     <div className="flex justify-between">
                                         <span className="text-gray-400">Balance:</span>
                                         <span className="text-white font-medium">
-                                            {searchResult.balance / LAMPORTS_PER_SOL} SOL
+                                            {searchResult.balance.toFixed(2)} SOL
                                         </span>
                                     </div>
                                     <div className="flex justify-between">
