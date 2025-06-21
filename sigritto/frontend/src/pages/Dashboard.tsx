@@ -157,7 +157,7 @@ export default function Dashboard() {
             return (walletDetails.filter(Boolean) as NonNullable<typeof walletDetails[number]>[]).map(wallet => ({
                 address: wallet.publicKey.toBase58(),
                 name: `Multisig #${wallet.nonce}`,
-                balance: wallet.balance.toFixed(4),
+                balance: wallet.balance,
                 owners: wallet.account.owners.map((o: PublicKey) => o.toBase58()),
                 threshold: wallet.account.threshold,
                 pendingTxCount: wallet.pendingTxCount,
@@ -387,7 +387,7 @@ export default function Dashboard() {
                                         <div className="flex justify-between">
                                             <span className="text-gray-400">Balance:</span>
                                             <span className="text-white font-medium">
-                                                {wallet.balance} SOL
+                                                {wallet.balance.toFixed(2)} SOL
                                             </span>
                                         </div>
                                         <div className="flex justify-between">

@@ -191,7 +191,7 @@ export default function CreateWallet() {
                                                 <Loader className="animate-spin text-purple-500 w-4 h-4 mr-2" />
                                             ) : (
                                                 <span className="text-2xl font-bold text-white">
-                                                    {balance?.toFixed(4) || '0.0000'} SOL
+                                                    {balance?.toFixed(4) || '0.00'} SOL
                                                 </span>
                                             )}
                                         </div>
@@ -219,14 +219,14 @@ export default function CreateWallet() {
                                             id="nonce"
                                             type="number"
                                             min="0"
-                                            max="255"
+                                            max="5"
                                             value={nonce}
                                             onChange={(e) => setNonce(Math.min(255, Math.max(0, parseInt(e.target.value)) || 0))}
                                             required
                                             className="bg-gray-800/50 border-gray-700"
                                         />
                                         <p className="text-sm text-gray-400">
-                                            Unique identifier (0-6) for this wallet version
+                                            Unique identifier (0-5) for this wallet version
                                         </p>
                                     </div>
                                     <div className="space-y-2">
